@@ -155,7 +155,7 @@ const Navigation = () => {
           </div>
           <ul className="head-social-media-list">
             <li>
-              <a href="#" target="_blank" rel="noopener noreferrer">
+              <a href="http://jinlab.hzau.edu.cn/static/T2TCottonHub/images/PBJ.jpg" target="_blank">
                 <WechatOutlined />
               </a>
             </li>

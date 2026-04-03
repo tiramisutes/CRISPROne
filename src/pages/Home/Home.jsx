@@ -35,7 +35,7 @@ const Home = () => {
       id: "7",
       left: "10%",
       top: "60%",
-      href: "/edited-analysis",
+      href: "http://122.205.95.222:8001/crispr_analysis_submit/",
       title: "Edited Analysis",
     },
     {
@@ -84,7 +84,7 @@ const Home = () => {
       id: "14",
       left: "82%",
       top: "88%",
-      href: "/off-target",
+      href: "/edited-analysis/off-target",
       title: "Off-target Analysis",
     },
   ];
@@ -184,18 +184,24 @@ const Home = () => {
         {/* 交互式定位点 */}
         {points.map((point) => (
           <div
-            key={point.id}
-            className="point"
-            style={{
-              position: "absolute",
-              left: point.left,
-              top: point.top,
-              transform: "translate(-50%, -50%)",
-              cursor: "pointer",
-            }}
-            onClick={() => navigate(point.href)}
-            title={point.title} // 添加悬停提示
-          >
+          key={point.id}
+          className="point"
+          style={{
+            position: "absolute",
+            left: point.left,
+            top: point.top,
+            transform: "translate(-50%, -50%)",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            if (point.href.startsWith("http")) {
+              window.open(point.href, "_blank");
+            } else {
+              navigate(point.href);
+            }
+          }}
+          title={point.title}
+        >
             {/* 脉冲圆点 */}
             <div className="pulse-wrapper">
               <div className="pulse-core"></div>
