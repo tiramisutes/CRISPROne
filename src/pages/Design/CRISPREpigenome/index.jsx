@@ -152,7 +152,7 @@ const CRISPREpigenome = () => {
       />
       <div className="epigenome-header">
         <div className="epigenome-image">
-          <img src={CRISPREpigenomeImage} alt="CRISPREpigenome" />
+          <img src={CRISPREpigenomeImage} alt="CRISPREpigenome" style={{ width: "800px", height: "auto" }}/>
         </div>
         <div className="epigenome-intro">
           <h1>Design of Epigenetics Editing guide RNAs</h1>

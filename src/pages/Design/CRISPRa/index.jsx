@@ -191,7 +191,7 @@ const CRISPRa = () => {
       />
       <div className="crispra-header">
         <div className="crispra-image">
-          <img src={CrisprAImage} alt="CrisprA" />
+          <img src={CrisprAImage} alt="CrisprA" style={{ width: "1000px", height: "auto" }}/>
         </div>
         <div className="crispra-intro">
           <h1>Design of CRISPR activation guide RNAs</h1>

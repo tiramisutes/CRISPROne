@@ -152,7 +152,7 @@ const CRISPRKnockin = () => {
       />
       <div className="knockin-header">
         <div className="knockin-image">
-          <img src={CrisprKnockinImage} alt="CrisprKnockin" />
+          <img src={CrisprKnockinImage} alt="CrisprKnockin" style={{ width: "1000px", height: "auto" }}/>
         </div>
         <div className="knockin-intro">
           <h1>Design of CRISPR Knock-ins guide RNAs</h1>

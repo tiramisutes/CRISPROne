@@ -150,7 +150,7 @@ const Cas9 = () => {
       />
       <div className="cas9-header">
         <div className="cas9-image">
-          <img src={cas9Image} alt="Cas9" />
+          <img src={cas9Image} alt="Cas9" style={{ width: "950px", height: "auto" }}/>
         </div>
         <div className="cas9-intro">
           <h1>Design of CRISPR/Cas9 guide RNAs</h1>

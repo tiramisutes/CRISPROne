@@ -162,6 +162,8 @@ const Cas12Cpf1 = () => {
               Allows interrogation of additional genomic regions compared to
               Cas9
             </li>
+            <li><strong>Simplified RNA system</strong>, requiring only a single crRNA without tracrRNA</li>
+            <li><strong>Intrinsic crRNA processing capability</strong>, enabling efficient multiplex genome editing</li>
           </ul>
         </div>
       </div>
