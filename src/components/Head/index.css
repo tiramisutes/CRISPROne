@@ -111,3 +111,40 @@
   justify-content: center; /* 可选：水平居中 */
   height: 100%;          /* 关键：继承父高度 */
 }
+
+
+/* ===== 左侧：Logo标题 ===== */
+.navigation-logo span {
+  font-size: 24px;   /* 原20 → 更突出 */
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* ===== 社交标题 ===== */
+.head-social-media-title {
+  font-size: 20px;   /* 原18 → 更清晰 */
+  font-weight: 600;
+  padding: 6px 35px; /* 略放大 */
+}
+
+/* ===== 社交图标 ===== */
+.head-social-media-list li a {
+  font-size: 28px;   /* 原24 → 更醒目 */
+}
+
+/* ===== 菜单字体（重点！）===== */
+.ant-menu {
+  font-size: 18px;   /* 控制整体菜单字体 */
+}
+
+.ant-menu-item,
+.ant-menu-submenu-title {
+  font-size: 18px !important;
+  font-weight: 500;
+}
+
+/* hover更清晰 */
+.ant-menu-item:hover,
+.ant-menu-submenu-title:hover {
+  font-weight: 600;
+}
