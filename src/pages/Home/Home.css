@@ -236,3 +236,108 @@
     font-size: 4vw;
   }
 }
+
+
+/* 点整体容器(补充的增强型脉冲) */
+.point {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* 包裹层 */
+.pulse-wrapper {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+/* 中心实心点（更亮） */
+.pulse-core {
+  width: 10px;
+  height: 10px;
+  background: #00ffcc;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 
+    0 0 8px #00ffcc,
+    0 0 16px #00ffcc,
+    0 0 24px rgba(0, 255, 204, 0.6);
+  z-index: 2;
+}
+
+/* 外层扩散波纹 */
+.pulse-ring {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 255, 204, 0.7);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulseRing 2s infinite ease-out;
+  z-index: 1;
+}
+
+/* 第二层延迟波纹（更有层次） */
+.pulse-ring.delay {
+  animation-delay: 1s;
+}
+
+/* 动画定义 */
+@keyframes pulseRing {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.9;
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.8);
+    opacity: 0;
+  }
+}
+
+/* hover强化（科研UI很重要） */
+.point:hover .pulse-core {
+  background: #00ffff;
+  box-shadow: 
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 30px rgba(0, 255, 255, 0.8);
+}
+
+.point:hover .pulse-ring {
+  border-color: rgba(0, 255, 255, 0.9);
+  animation-duration: 1.2s;
+}
+
+/* 标签样式（建议也一起优化） */
+.point-label {
+  margin-top: 6px;
+  font-size: 12px;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  opacity: 0.9;
+  transition: all 0.2s ease;
+}
+
+.point:hover .point-label {
+  background: rgba(0, 255, 255, 0.8);
+  color: #000;
+  transform: translateX(-50%) scale(1.05);
+}

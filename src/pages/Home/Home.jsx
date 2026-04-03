@@ -14,7 +14,7 @@ const Home = () => {
   // 定义交互式定位点的数据
   const points = [
     { id: "1", left: "91%", top: "54%", href: "/cas9", title: "Cas9" },
-    { id: "2", left: "90%", top: "71%", href: "/cas12/cpf1", title: "Cas12" },
+    { id: "2", left: "95%", top: "68%", href: "/cas12/cpf1", title: "Cas12" },
     { id: "3", left: "50%", top: "59%", href: "/cas13", title: "Cas13" },
     {
       id: "4",
@@ -25,12 +25,12 @@ const Home = () => {
     },
     {
       id: "5",
-      left: "88%",
+      left: "95%",
       top: "22%",
       href: "/primer-editor",
       title: "Primer Editor",
     },
-    { id: "6", left: "42%", top: "88%", href: "/crispra", title: "CRISPRa" },
+    { id: "6", left: "48%", top: "88%", href: "/crispra", title: "CRISPRa" },
     {
       id: "7",
       left: "10%",
@@ -40,7 +40,7 @@ const Home = () => {
     },
     {
       id: "8",
-      left: "62%",
+      left: "71%",
       top: "52%",
       href: "/chat-crispr",
       title: "ChatCRISPR",
@@ -61,10 +61,31 @@ const Home = () => {
     },
     {
       id: "11",
-      left: "65%",
-      top: "12%",
+      left: "80%",
+      top: "10%",
       href: "/crispr-epigenome",
       title: "CRISPR Epigenome",
+    },
+    {
+      id: "12",
+      left: "24%",
+      top: "92%",
+      href: "/TnpB",
+      title: "TnpB/IscB",
+    },
+    {
+      id: "13",
+      left: "30%",
+      top: "88%",
+      href: "/FanZor",
+      title: "FanZor",
+    },
+    {
+      id: "14",
+      left: "82%",
+      top: "88%",
+      href: "/off-target",
+      title: "Off-target Analysis",
     },
   ];
 
@@ -176,7 +197,11 @@ const Home = () => {
             title={point.title} // 添加悬停提示
           >
             {/* 脉冲圆点 */}
-            <div className="circle"></div>
+            <div className="pulse-wrapper">
+              <div className="pulse-core"></div>
+              <div className="pulse-ring"></div>
+              <div className="pulse-ring delay"></div>
+            </div>
 
             {/* 标签文字 */}
             <div className="point-label">{point.title}</div>
