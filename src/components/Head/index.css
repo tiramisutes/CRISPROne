@@ -1,5 +1,6 @@
 /* 导航栏整体 */
 .navigation-header {
+  height: 60px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -102,4 +103,11 @@
   img {
   filter: brightness(0) saturate(100%) invert(29%) sepia(98%) saturate(1291%)
     hue-rotate(202deg) brightness(95%) contrast(87%);
+}
+
+.navigation-center {
+  display: flex;
+  align-items: center;   /* ✅ 垂直居中核心 */
+  justify-content: center; /* 可选：水平居中 */
+  height: 100%;          /* 关键：继承父高度 */
 }

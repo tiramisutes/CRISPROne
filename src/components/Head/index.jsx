@@ -12,6 +12,7 @@ import {
 import { navItems } from "./Links";
 import DNAIcon from "@/assets/icon/DNAIcon";
 import "./index.css";
+import logo from "@/assets/images/home/GEP_logo.png";
 
 const NavSwiper = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
@@ -146,6 +147,16 @@ const Navigation = () => {
           >
             CRISPRone: An Integrated Platform for sgRNA Design, Editing Detection, and CRISPR Agents
           </span>
+        </div>
+
+        {/* logo */}
+        <div className="navigation-center">
+          <img
+            src={logo}
+            style={{ height: "30px", cursor: "pointer" }}
+            onClick={() => window.open("http://jinlab.hzau.edu.cn/GenomeEditingPlatform/", "_blank")}
+            alt="logo"
+          />
         </div>
 
         {/* 社交 */}
