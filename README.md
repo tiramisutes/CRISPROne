@@ -46,3 +46,9 @@ npm run dev
 ```
 http://localhost:3000
 ```
+
+### 4️⃣ 生成 frontend 的 build 目录, 用于替换 Django 项目对应文件夹
+
+```
+npm run build
+```
