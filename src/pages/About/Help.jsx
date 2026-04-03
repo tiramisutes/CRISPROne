@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./index.scss";
-import { useState } from "react";
+import genomeCSV from "./genome_metadata.csv?url";
 
 // Q&A
 const helpItems = [
@@ -105,8 +105,44 @@ const helpItems = [
 
 const Help = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [genomeData, setGenomeData] = useState([]);
 
-  // Filter help items based on search query
+  // ✅ 加载 CSV
+  useEffect(() => {
+    fetch(genomeCSV)
+      .then((res) => {
+        if (!res.ok) throw new Error("CSV load failed");
+        return res.text();
+      })
+      .then((text) => {
+        const lines = text
+          .split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean);
+
+        if (lines.length < 2) return;
+
+        const headers = lines[0].split(",");
+
+        const data = lines.slice(1).map((line) => {
+          const values = line.split(",");
+          const obj = {};
+
+          headers.forEach((h, i) => {
+            obj[h] = values[i] || "";
+          });
+
+          return obj;
+        });
+
+        setGenomeData(data);
+      })
+      .catch((err) => {
+        console.error("CSV ERROR:", err);
+      });
+  }, []);
+
+  // 搜索
   const filteredHelpItems = helpItems.filter((item) =>
     item.question.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -115,7 +151,9 @@ const Help = () => {
     <div className="help">
       <h1>CRISPRone Documentation Center</h1>
       <div className="divider"></div>
+
       <div className="help-content">
+        {/* Sidebar */}
         <div className="help-sidebar">
           <div className="search-container">
             <input
@@ -126,6 +164,7 @@ const Help = () => {
               className="search-input"
             />
           </div>
+
           <h3>Contents</h3>
           <div className="help-sidebar-list">
             {filteredHelpItems.map((item) => (
@@ -135,12 +174,59 @@ const Help = () => {
             ))}
           </div>
         </div>
+
+        {/* Main */}
         <div className="help-main">
           {filteredHelpItems.map((item) => (
             <div key={item.id} id={item.id} className="help-item">
               <h2>{item.question}</h2>
               <hr />
-              <p>{item.answer}</p>
+
+              <p style={{ whiteSpace: "pre-line" }}>{item.answer}</p>
+
+              {/* ✅ genomes 表格 */}
+              {item.id === "genomes" && (
+                <div style={{ marginTop: "30px" }}>
+                  <h3>Genome Reference Table Used in this CRISPRone</h3>
+
+                  {genomeData.length === 0 ? (
+                    <p>Loading...</p>
+                  ) : (
+                    <table className="genome-table">
+                      <thead>
+                        <tr>
+                          {Object.keys(genomeData[0]).map((key) => (
+                            <th key={key}>{key}</th>
+                          ))}
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {genomeData.map((row, index) => (
+                          <tr key={index}>
+                            {Object.values(row).map((val, i) => (
+                              <td key={i}>
+                                {typeof val === "string" &&
+                                val.startsWith("http") ? (
+                                  <a
+                                    href={val}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    Download
+                                  </a>
+                                ) : (
+                                  val
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>

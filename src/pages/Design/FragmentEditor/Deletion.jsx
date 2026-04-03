@@ -214,7 +214,7 @@ const Deletion = () => {
             <div className={styles.formGroup + " " + styles.half}>
               <label htmlFor="targetGenome">
                 Target Genome
-                <a href="#" className={styles.helpLink}>
+                <a href="/help-about/help#genomes" className={styles.helpLink}>
                   More Information of Genomes Metadata
                   <InfoCircleOutlined />
                 </a>

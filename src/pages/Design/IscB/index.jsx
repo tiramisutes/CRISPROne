@@ -271,7 +271,7 @@ const ISCB = () => {
             <div className="form-group half">
               <label htmlFor="targetGenome">
                 Target Genome
-                <a href="#" className="help-link">
+                <a href="/help-about/help#genomes" className="help-link">
                   More Information of Genomes Metadata
                   <InfoCircleOutlined />
                 </a>

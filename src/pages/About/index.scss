@@ -423,3 +423,36 @@ html {
 .help-item p {
   white-space: pre-line;
 }
+
+.genome-table-wrapper {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.genome-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.genome-table th {
+  background: #2c3e50;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+.genome-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.genome-table tr:hover {
+  background: #f7fbff;
+}
+
+/* 科研风 */
+.genome-table tr:nth-child(even) {
+  background: #fafafa;
+}
