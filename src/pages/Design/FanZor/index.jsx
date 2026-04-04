@@ -5,7 +5,7 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import { Select, Input, InputNumber, notification } from "antd";
-import cas9Image from "@/assets/images/design/cas/cas9.png";
+import FanzorImage from "@/assets/images/design/Fanzor.png";
 import "./index.css";
 import {
   PAM_TYPE_OPTIONS_FANZOR,
@@ -149,7 +149,7 @@ const FanZor = () => {
       />
       <div className="cas9-header">
         <div className="cas9-image">
-          <img src={cas9Image} alt="Cas9" />
+          <img src={FanzorImage} alt="Cas9" style={{ width: "1100px", height: "auto" }}/>
         </div>
         <div className="cas9-intro">
           <h1>Design of FanZor guide RNAs</h1>

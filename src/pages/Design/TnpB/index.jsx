@@ -5,7 +5,7 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import { Select, Input, InputNumber, notification } from "antd";
-import cas9Image from "@/assets/images/design/cas/cas9.png";
+import TnpBImage from "@/assets/images/design/TnpB.png";
 import "./index.css";
 import {
   PAM_TYPE_OPTIONS_TNPB,
@@ -149,7 +149,7 @@ const TnpB = () => {
       />
       <div className="cas9-header">
         <div className="cas9-image">
-          <img src={cas9Image} alt="Cas9" />
+          <img src={TnpBImage} alt="Cas9" style={{ width: "1000px", height: "auto" }}/>
         </div>
         <div className="cas9-intro">
           <h1>Design of TnpB guide RNAs</h1>

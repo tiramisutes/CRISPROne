@@ -5,7 +5,7 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import { Select, Input, InputNumber, notification } from "antd";
-import cas9Image from "@/assets/images/design/cas/cas9.png";
+import IscbImage from "@/assets/images/design/Iscb.png";
 import "./index.css";
 import {
   PAM_TYPE_OPTIONS_ISCB,
@@ -149,7 +149,7 @@ const ISCB = () => {
       />
       <div className="cas9-header">
         <div className="cas9-image">
-          <img src={cas9Image} alt="Cas9" />
+          <img src={IscbImage} alt="Cas9" style={{ width: "700px", height: "auto" }}/>
         </div>
         <div className="cas9-intro">
           <h1>Design of IscB guide RNAs</h1>
