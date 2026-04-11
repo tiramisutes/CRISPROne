@@ -32,7 +32,7 @@ npm install
 报错后强制安装
 
 ```bash
-npm install --force
+npm install --legacy-peer-deps
 ```
 
 如果没有安装 Node.js，需要先安装：
