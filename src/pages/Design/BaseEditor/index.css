@@ -577,3 +577,13 @@
 @media (max-width: 1280px) {
   .be-meta { grid-template-columns: 1fr; }
 }
+
+
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  color: #ff4d4f;
+  font-size: 16px;
+}

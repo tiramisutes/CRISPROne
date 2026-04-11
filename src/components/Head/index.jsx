@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Menu, Drawer, Button } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  MenuOutlined,
+  BarsOutlined,
   WechatOutlined,
   BilibiliOutlined,
   FacebookOutlined,
@@ -11,8 +11,8 @@ import {
 } from "@ant-design/icons";
 import { navItems } from "./Links";
 import DNAIcon from "@/assets/icon/DNAIcon";
+import GEPLogo from "@/assets/images/home/GEP_logo.png";
 import "./index.css";
-import logo from "@/assets/images/home/GEP_logo.png";
 
 const NavSwiper = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
@@ -24,81 +24,65 @@ const NavSwiper = () => {
     ApiOutlined: <DNAIcon />,
   };
 
-  // 👉 扁平化所有菜单（用于查找点击项）
-  const flatMenuItems = useMemo(() => {
-    return navItems.flatMap((item) => [
-      item,
-      ...(item.children || []),
-    ]);
-  }, []);
+  const flatNavItems = navItems.flatMap((item) => [item, ...(item.children || [])]);
 
-  // 👉 转换 Menu 结构（只负责结构，不写点击逻辑）
-  const menuItems = useMemo(() => {
-    return navItems.map((item) => ({
-      key: item.path,
-      label: item.label,
-      children: item.children
-        ? item.children.map((child) => ({
-            key: child.path,
-            label: child.label,
-            icon: child.icon ? iconMap[child.icon] : undefined,
-          }))
-        : undefined,
-    }));
-  }, []);
+  // 将 navItems 转换为 Menu 组件所需的格式
+  const menuItems = navItems.map((item) => ({
+    key: item.path,
+    label: item.label,
+    children: item.children
+      ? item.children.map((child) => ({
+          key: child.path,
+          label: child.label,
+          icon: child.icon ? iconMap[child.icon] : undefined,
+        }))
+      : undefined,
+  }));
 
-  // 👉 点击处理（统一控制🔥）
   const handleMenuClick = ({ key }) => {
-    const clickedItem = flatMenuItems.find((i) => i.path === key);
-    if (!clickedItem) return;
+    const clickedItem = flatNavItems.find((item) => item.path === key);
 
-    if (clickedItem.external) {
-      window.open(clickedItem.path, "_blank");
+    if (clickedItem?.external) {
+      window.open(clickedItem.path, "_blank", "noopener,noreferrer");
     } else {
-      navigate(clickedItem.path);
+      navigate(key);
     }
 
+    setMobileMenuVisible(false); // 移动端点击后关闭抽屉
+  };
+
+  const showMobileMenu = () => {
+    setMobileMenuVisible(true);
+  };
+
+  const hideMobileMenu = () => {
     setMobileMenuVisible(false);
   };
 
-  // 👉 当前选中菜单
-  const selectedKeys = [location.pathname];
-
-  // 👉 自动展开父菜单（核心🔥）
-  const openKeys = useMemo(() => {
-    const matched = navItems.find((item) =>
-      item.children?.some((child) =>
-        location.pathname.startsWith(child.path)
-      )
-    );
-    return matched ? [matched.path] : [];
-  }, [location.pathname]);
-
   return (
     <div className="navigation-menu-container">
-      {/* 桌面端 */}
+      {/* 桌面端导航菜单 */}
       <div className="desktop-nav">
         <Menu
           mode="horizontal"
-          selectedKeys={selectedKeys}
-          defaultOpenKeys={openKeys}
+          selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={handleMenuClick}
           style={{
             borderBottom: "none",
             backgroundColor: "transparent",
-            fontSize: "13px",
-            fontWeight: "600",
+            fontSize: "18px",
+            fontWeight: "700",
           }}
         />
       </div>
 
-      {/* 移动端按钮 */}
+      {/* 移动端菜单按钮 */}
       <div className="mobile-nav-button">
         <Button
           type="text"
-          icon={<MenuOutlined />}
-          onClick={() => setMobileMenuVisible(true)}
+          icon={<BarsOutlined />}
+          onClick={showMobileMenu}
           style={{
             fontSize: "18px",
             height: "40px",
@@ -107,23 +91,23 @@ const NavSwiper = () => {
         />
       </div>
 
-      {/* 移动端抽屉 */}
+      {/* 移动端抽屉菜单 */}
       <Drawer
-        title="Navigation"
+        title="导航菜单"
         placement="right"
-        onClose={() => setMobileMenuVisible(false)}
+        onClose={hideMobileMenu}
         open={mobileMenuVisible}
         width={280}
       >
         <Menu
-          mode="inline"
-          selectedKeys={selectedKeys}
-          defaultOpenKeys={openKeys}
+          mode="vertical"
+          selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={handleMenuClick}
           style={{
             border: "none",
-            fontSize: "16px",
+            fontSize: "18px",
+            fontWeight: "600",
           }}
         />
       </Drawer>
@@ -136,65 +120,74 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Header */}
+      {/* 头部信息区域 */}
       <div className="navigation-header">
         <div className="navigation-logo">
-          <img src="/logo.png" alt="logo" onClick={() => navigate("/")} />
-          <span
-            className="navigation-title-link"
-            onClick={() => navigate("/")}
-            style={{ cursor: "pointer" }}
-          >
-            CRISPRone: An Integrated Platform for sgRNA Design, Editing Detection, and CRISPR Agents
-          </span>
+          <div className="navigation-brand-group">
+            <img
+              className="navigation-main-logo"
+              src="/logo.png"
+              alt="CRISPRone logo"
+              onClick={() => navigate("/")}
+            />
+            <span className="navigation-title">
+              CRISPRone: An Integrated Platform for sgRNA Design, Editing
+              Detection, and CRISPR Agents
+            </span>
+          </div>
+          <img className="navigation-gep-logo" src={GEPLogo} alt="GEP logo" />
         </div>
-
-        {/* logo */}
-        <div className="navigation-center">
-          <img
-            src={logo}
-            style={{ height: "30px", cursor: "pointer" }}
-            onClick={() => window.open("http://jinlab.hzau.edu.cn/GenomeEditingPlatform/", "_blank")}
-            alt="logo"
-          />
-        </div>
-
-        {/* 社交 */}
         <div className="navigation-social">
           <div className="head-social-media-title">
             Follow CRISPRone on social media
           </div>
           <ul className="head-social-media-list">
             <li>
-              <a href="http://jinlab.hzau.edu.cn/static/T2TCottonHub/images/PBJ.jpg" target="_blank">
-                <WechatOutlined />
+              <a href="http://jinlab.hzau.edu.cn/static/T2TCottonHub/images/PBJ.jpg" target="_blank" rel="noopener noreferrer">
+                <WechatOutlined aria-label="WeChat" />
               </a>
             </li>
             <li>
-              <a href="https://space.bilibili.com/62795729" target="_blank">
-                <BilibiliOutlined />
+              <a
+                href="https://space.bilibili.com/62795729"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <BilibiliOutlined aria-label="Bilibili" />
               </a>
             </li>
             <li>
-              <a href="https://www.facebook.com/mdbootstrap" target="_blank">
-                <FacebookOutlined />
+              <a
+                href="https://www.facebook.com/mdbootstrap"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FacebookOutlined aria-label="Facebook" />
               </a>
             </li>
             <li>
-              <a href="https://github.com/tiramisutes" target="_blank">
-                <GithubOutlined />
+              <a
+                href="https://github.com/tiramisutes"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GithubOutlined aria-label="Github" />
               </a>
             </li>
             <li>
-              <a href="https://twitter.com/hopetogy" target="_blank">
-                <TwitterOutlined />
+              <a
+                href="https://twitter.com/hopetogy"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <TwitterOutlined aria-label="Twitter" />
               </a>
             </li>
           </ul>
         </div>
       </div>
 
-      {/* Menu */}
+      {/* 导航菜单区域 */}
       <NavSwiper />
     </>
   );

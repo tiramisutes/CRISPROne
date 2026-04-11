@@ -1,120 +1,158 @@
 .intro-section {
   width: 100%;
-  margin-top: 100px;
+  margin: 72px auto !important;
 }
 
-.cards-section {
-  margin: 100px 0;
+.intro-section + .intro-section {
+  margin-top: 56px;
 }
 
-/* 响应式样式 */
-@media (max-width: 768px) {
-  /* 左图右文模块在移动端改为垂直布局 */
-  .intro-section {
-    flex-direction: column !important;
-    gap: 30px !important;
-    text-align: center;
-  }
-
-  .intro-image {
-    width: 100% !important;
-    max-width: 300px !important;
-  }
-
-  .intro-text {
-    width: 100% !important;
-    text-align: left;
-  }
-
-  /* 卡片在移动端改为垂直布局 */
-  .cards-section {
-    flex-direction: column !important;
-    align-items: center;
-  }
-
-  .card {
-    width: 100% !important;
-    max-width: 300px !important;
-  }
+.home-section-title {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
-@media (max-width: 480px) {
-  .hero-section {
-    height: 300px !important;
-  }
-
-  .intro-section,
-  .cards-section {
-    padding: 0 15px !important;
-  }
+.home-lead,
+.home-text-item,
+.home-summary {
+  color: #40545b;
+  line-height: 1.8;
 }
 
-/* 交互式定位点样式 */
-.point {
-  z-index: 10;
+.home-lead {
+  margin-bottom: 16px;
+}
+
+.home-inline-link {
+  color: #1677ff;
+  text-decoration: none;
+}
+
+.home-inline-link:hover {
+  color: #0958d9;
+  text-decoration: underline;
+}
+
+.home-text-list {
+  margin-top: 12px;
+}
+
+.home-text-item {
+  margin-bottom: 12px;
+}
+
+.home-text-item strong,
+.home-summary strong {
+  color: #2c3e50;
+}
+
+.home-summary {
+  margin-top: 18px;
+}
+
+.hero-section {
   position: relative;
 }
 
-/* 脉冲圆点样式 */
-.point .circle {
+.point {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.pulse-wrapper {
+  position: relative;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #4caf50, #67ad5b);
-  box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
-  position: relative;
-  animation: pulse 2s infinite;
-  transition: transform 0.3s ease;
 }
 
-/* 脉冲动画 */
-@keyframes pulse {
+.pulse-core {
+  width: 10px;
+  height: 10px;
+  background: #00ffcc;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 0 8px #00ffcc,
+    0 0 16px #00ffcc,
+    0 0 24px rgba(0, 255, 204, 0.6);
+  z-index: 2;
+}
+
+.pulse-ring {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 255, 204, 0.7);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulseRing 2s infinite ease-out;
+  z-index: 1;
+}
+
+.pulse-ring.delay {
+  animation-delay: 1s;
+}
+
+@keyframes pulseRing {
   0% {
-    transform: scale(1);
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.9;
   }
-  50% {
-    transform: scale(1.1);
-    box-shadow: 0 0 25px rgba(76, 175, 80, 0.8);
+  70% {
+    transform: translate(-50%, -50%) scale(2.2);
+    opacity: 0.2;
   }
   100% {
-    transform: scale(1);
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+    transform: translate(-50%, -50%) scale(2.8);
+    opacity: 0;
   }
 }
 
-/* 圆点悬停效果 */
-.point:hover .circle {
-  transform: scale(1.2);
-  background: linear-gradient(45deg, #45a049, #5d9c52);
-  box-shadow: 0 0 30px rgba(76, 175, 80, 1);
+.point:hover .pulse-core {
+  background: #00ffff;
+  box-shadow:
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 30px rgba(0, 255, 255, 0.8);
 }
 
-/* 标签文字样式 */
+.point:hover .pulse-ring {
+  border-color: rgba(0, 255, 255, 0.9);
+  animation-duration: 1.2s;
+}
+
 .point-label {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 8px;
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  border-radius: 4px;
+  margin-top: 6px;
   font-size: 12px;
-  font-weight: 500;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
   white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
+  transform: translateX(-50%);
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  opacity: 0.9;
+  transition: all 0.2s ease;
 }
 
-/* 悬停时显示标签 */
 .point:hover .point-label {
-  opacity: 1;
+  background: rgba(0, 255, 255, 0.8);
+  color: #000;
+  transform: translateX(-50%) scale(1.05);
 }
 
-/* banner-text 样式 - 直接复制自project_crispr */
 .banner-text {
   position: absolute;
   top: 40%;
@@ -160,7 +198,6 @@
   animation: subtitleFadeIn 1s ease-out 0.5s forwards;
 }
 
-/* 动画定义 - 复制自project_crispr */
 @keyframes titleFadeIn {
   from {
     opacity: 0;
@@ -192,9 +229,34 @@
   }
 }
 
-/* 响应式调整定位点 */
+@media (max-width: 1024px) {
+  .home-section-title {
+    font-size: 24px;
+  }
+}
+
 @media (max-width: 768px) {
-  .point .circle {
+  .intro-section {
+    flex-direction: column !important;
+    gap: 30px !important;
+    text-align: center;
+  }
+
+  .intro-section + .intro-section {
+    margin-top: 40px;
+  }
+
+  .intro-image {
+    width: 100% !important;
+    max-width: 300px !important;
+  }
+
+  .intro-text {
+    width: 100% !important;
+    text-align: left;
+  }
+
+  .pulse-wrapper {
     width: 16px;
     height: 16px;
   }
@@ -218,7 +280,15 @@
 }
 
 @media (max-width: 480px) {
-  .point .circle {
+  .hero-section {
+    height: 300px !important;
+  }
+
+  .intro-section {
+    padding: 0 15px !important;
+  }
+
+  .pulse-wrapper {
     width: 14px;
     height: 14px;
   }
@@ -235,109 +305,4 @@
   .sub-title {
     font-size: 4vw;
   }
-}
-
-
-/* 点整体容器(补充的增强型脉冲) */
-.point {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 10;
-}
-
-/* 包裹层 */
-.pulse-wrapper {
-  position: relative;
-  width: 20px;
-  height: 20px;
-}
-
-/* 中心实心点（更亮） */
-.pulse-core {
-  width: 10px;
-  height: 10px;
-  background: #00ffcc;
-  border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 
-    0 0 8px #00ffcc,
-    0 0 16px #00ffcc,
-    0 0 24px rgba(0, 255, 204, 0.6);
-  z-index: 2;
-}
-
-/* 外层扩散波纹 */
-.pulse-ring {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(0, 255, 204, 0.7);
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: pulseRing 2s infinite ease-out;
-  z-index: 1;
-}
-
-/* 第二层延迟波纹（更有层次） */
-.pulse-ring.delay {
-  animation-delay: 1s;
-}
-
-/* 动画定义 */
-@keyframes pulseRing {
-  0% {
-    transform: translate(-50%, -50%) scale(0.6);
-    opacity: 0.9;
-  }
-  70% {
-    transform: translate(-50%, -50%) scale(2.2);
-    opacity: 0.2;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(2.8);
-    opacity: 0;
-  }
-}
-
-/* hover强化（科研UI很重要） */
-.point:hover .pulse-core {
-  background: #00ffff;
-  box-shadow: 
-    0 0 10px #00ffff,
-    0 0 20px #00ffff,
-    0 0 30px rgba(0, 255, 255, 0.8);
-}
-
-.point:hover .pulse-ring {
-  border-color: rgba(0, 255, 255, 0.9);
-  animation-duration: 1.2s;
-}
-
-/* 标签样式（建议也一起优化） */
-.point-label {
-  margin-top: 6px;
-  font-size: 12px;
-  color: white;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-  transform: translateX(-50%);
-  position: absolute;
-  left: 50%;
-  top: 20px;
-  opacity: 0.9;
-  transition: all 0.2s ease;
-}
-
-.point:hover .point-label {
-  background: rgba(0, 255, 255, 0.8);
-  color: #000;
-  transform: translateX(-50%) scale(1.05);
 }

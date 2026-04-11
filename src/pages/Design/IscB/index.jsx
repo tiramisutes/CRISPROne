@@ -13,7 +13,7 @@ import {
   SGRNA_MODULE_OPTIONS,
   EXAMPLE_DATA,
 } from "@/utils/datas/formOptions";
-import { executeCas9Design } from "@/utils/api/cas9";
+import { executeIscBDesign } from "@/utils/api/iscB";
 import PollingLoader from "@/components/PollingLoader";
 
 const { Option } = Select;
@@ -143,8 +143,8 @@ const ISCB = () => {
       {/* 轮询加载组件 */}
       <PollingLoader
         ref={pollingLoaderRef}
-        apiFunction={executeCas9Design}
-        resultPath="/cas9/result"
+        apiFunction={executeIscBDesign}
+        resultPath="/iscB/result"
         getFormData={getFormData}
       />
       <div className="cas9-header">

@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { Typography, Collapse, message, Card, Tag, Table, Select, Space, Button, Dropdown } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
-import { executeBEDesign } from "@/utils/api/BE";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { executeBEDesign, getBEResult } from "@/utils/api/BE";
+import { extractUserParameters, resolveDesignResult } from "@/utils/designResult";
 import { useDownloadProgress } from "@/hooks/useDownloadProgress";
 import LoadingProgress from "@/components/LoadingProgress";
+import GlobalFullscreenToggle from "@/components/GlobalFullscreenToggle";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./index.css";
@@ -273,12 +275,13 @@ const renderParameterItem = (label, value) => {
 };
 const Result = () => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [userParameters, setUserParameters] = useState(null);
   const [resultData, setResultData] = useState(null);
   const [beRows, setBeRows] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [pageError, setPageError] = useState("");
   
   // 使用下载进度 Hook
   const { progress, text: loadingText, setText: setLoadingText, createProgressHandler } = useDownloadProgress();
@@ -288,30 +291,39 @@ const Result = () => {
     const initializeData = async () => {
       try {
         setLoading(true);
-        // 从 router state 读取参数
-        const { apiParams } = location.state || {};
+        setPageError("");
+        setLoadingText("Fetching result from server...");
 
-        if (!apiParams) {
-          message.error("Design result data not found, please redesign");
-          setLoading(false);
-          setTimeout(() => {
-            navigate("/base-editor");
-          }, 2000);
+        const resolution = await resolveDesignResult({
+          searchParams,
+          locationState: location.state,
+          executeRequest: executeBEDesign,
+          getRequest: getBEResult,
+          createProgressHandler,
+          isReady: (data) => Boolean(
+            Array.isArray(data) ||
+            data?.TableData ||
+            Array.isArray(data?.rows) ||
+            Array.isArray(data?.data?.rows)
+          ),
+        });
+
+        if (resolution.status !== "success") {
+          setPageError(resolution.error);
+          if (resolution.status === "pending") {
+            message.info(resolution.error);
+          } else {
+            message.error(resolution.error);
+          }
           return;
         }
 
-        setUserParameters(apiParams);
+        const data = resolution.data;
+        setLoadingText('Processing data...');
+        setUserParameters(extractUserParameters(resolution.apiParams, data));
+        setResultData(data);
 
-        setLoadingText('Fetching data from server...');
 
-        // 使用参数请求结果
-        const response = await executeBEDesign(apiParams, createProgressHandler());
-
-        if (response && response.data) {
-          // BaseEditor只需要TableData，不需要JBrowse
-          setLoadingText('Processing data...');
-          const data = response.data;
-          setResultData(data);
 
           // 规范化提取行数据作为主表数据源
           const extractRowsFromResponse = (rd) => {
@@ -327,36 +339,17 @@ const Result = () => {
           
           setLoadingText('Initialization complete!');
           message.success("Data loaded successfully");
-        } else {
-          message.error("Response format exception, please redesign");
-          setTimeout(() => {
-            navigate("/base-editor");
-          }, 2000);
-        }
       } catch (error) {
         console.error("Initialization failed:", error);
-        let errorMsg = "";
-        if (error.response) {
-          if (typeof error.response.data === 'string') {
-            errorMsg = error.response.data;
-          } else {
-            errorMsg = error.response.data?.error || error.response.data?.msg || error.response.data?.message || `Request failed: ${error.response.status}`;
-          }
-        } else if (error.request) {
-          errorMsg = "Network error, please check your network connection";
-        } else {
-          errorMsg = error?.message || "Request failed, please try again later";
-        }
-        message.error(errorMsg);
-        setTimeout(() => {
-          navigate("/base-editor");
-        }, 2000);
+        const errorText = error?.message || "Data loading failed";
+        setPageError(errorText);
+        message.error("Data loading failed: " + errorText);
       } finally {
         setLoading(false);
       }
     };
     initializeData();
-  }, [location, navigate]);
+  }, []);
 
   const masterVisible = beRows;
   const selected = masterVisible[selectedIndex] || null;
@@ -536,8 +529,17 @@ const Result = () => {
     return <LoadingProgress percent={progress} text={loadingText} />;
   }
 
+  if (!resultData) {
+    return (
+      <div className="error-container">
+        <p>{pageError || "Failed to load result data"}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="cas9-result-container">
+    <div className="cas9-result-container result-page-shell">
+      <GlobalFullscreenToggle />
       {/* 参数部分 */}
       <div className="result-section">
         <Title level={3}>Set Parameters</Title>
@@ -564,10 +566,10 @@ const Result = () => {
                       "Target Genome",
                       userParameters.name_db
                     )}
-                    {renderParameterItem(
+                    {/* {renderParameterItem(
                       "Customized PAM",
                       userParameters.customizedPAM
-                    )}
+                    )} */}
                     {renderParameterItem(
                       "Spacer Length",
                       userParameters.spacerLength

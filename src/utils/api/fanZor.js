@@ -1,4 +1,4 @@
-import { post } from "@/utils/request";
+import { get, post } from "@/utils/request";
 
 /**
  * FanZor设计API接口
@@ -20,5 +20,16 @@ export const executeFanZorDesign = async (params, onDownloadProgress) => {
     name_db: params.name_db,
   }, {
     onDownloadProgress: onDownloadProgress,
+  });
+};
+
+/**
+ * 查询结果接口
+ * @param { task_id: string } params
+ * @returns {Promise} API响应结果
+ */
+export const getFanZorResult = async (params) => {
+  return get("/fanZor/execute/", {
+    task_id: params.task_id,
   });
 };

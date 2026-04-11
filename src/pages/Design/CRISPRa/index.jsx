@@ -201,6 +201,11 @@ const CRISPRa = () => {
             (dCas9) to upregulate target genes within their native context. This
             method offers many advantages over more traditional gene
             overexpression techniques, such as cDNA and ORF.
+            <InfoCircleOutlined
+              onClick={() => {
+                alert("info");
+              }}
+            />
           </p>
           <h2>Advantages:</h2>
           <ul>

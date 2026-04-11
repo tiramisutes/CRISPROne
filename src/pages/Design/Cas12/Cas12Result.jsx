@@ -1,28 +1,118 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Typography, Collapse, message, Button, Space, Input, Table, Dropdown } from "antd";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   JBrowseLinearGenomeView,
   createViewState,
 } from "@jbrowse/react-linear-genome-view";
 import {
   calculateLocus,
+  normalizeLocString,
   processUrl,
   processMdAndSequence,
-} from "@/pages/Design/Cas9/result.jsx";
-import { executeCas12Design } from "@/utils/api/cas12";
+} from "@/utils/jbrowseResult";
+import { executeCas12Design, getCas12Result } from "@/utils/api/cas12";
+import { extractUserParameters, resolveDesignResult } from "@/utils/designResult";
 import { useDownloadProgress } from "@/hooks/useDownloadProgress";
 import LoadingProgress from "@/components/LoadingProgress";
+import GlobalFullscreenToggle from "@/components/GlobalFullscreenToggle";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./index.css";
 
 const { Title } = Typography;
 const { Panel } = Collapse;
+
+const getIndexTypeFromUrl = (url) => {
+  if (!url) return "CSI";
+
+  const normalizedUrl = url.toLowerCase();
+
+  if (normalizedUrl.includes(".tbi")) {
+    return "TBI";
+  }
+
+  if (normalizedUrl.includes(".csi")) {
+    return "CSI";
+  }
+
+  return "CSI";
+};
+
+const resolveIndexType = async (indexUrl) => {
+  const normalizedUrl = processUrl(indexUrl);
+
+  try {
+    const response = await fetch(normalizedUrl, { method: "HEAD" });
+    const contentDisposition =
+      response.headers.get("Content-Disposition") || "";
+    const normalizedHeader = contentDisposition.toLowerCase();
+
+    if (normalizedHeader.includes(".tbi")) {
+      return "TBI";
+    }
+
+    if (normalizedHeader.includes(".csi")) {
+      return "CSI";
+    }
+  } catch (error) {
+    console.warn("Failed to resolve JBrowse index type:", error);
+  }
+
+  return getIndexTypeFromUrl(indexUrl);
+};
+
+const createFeatureTrackConfig = ({
+  trackId,
+  name,
+  assemblyName,
+  gff3Url,
+  indexUrl,
+  indexType,
+}) => ({
+  type: "FeatureTrack",
+  trackId,
+  name,
+  assemblyNames: [assemblyName],
+  adapter: {
+    type: "Gff3TabixAdapter",
+    gffGzLocation: {
+      uri: processUrl(gff3Url),
+      locationType: "UriLocation",
+    },
+    index: {
+      location: {
+        uri: processUrl(indexUrl),
+        locationType: "UriLocation",
+      },
+      indexType,
+    },
+  },
+});
+
+const createLinearDisplayTrack = ({
+  id,
+  configuration,
+  heightPreConfig = 200,
+}) => ({
+  id,
+  type: "FeatureTrack",
+  configuration,
+  minimized: false,
+  displays: [
+    {
+      id: `${id}-display`,
+      type: "LinearBasicDisplay",
+      heightPreConfig,
+      configuration: `${configuration}-LinearBasicDisplay`,
+    },
+  ],
+});
+
 const Cas12Result = () => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [userParameters, setUserParameters] = useState(null);
   const [loading, setLoading] = useState(true);
   const [jbrowseState, setJbrowseState] = useState(null);
@@ -34,6 +124,7 @@ const Cas12Result = () => {
   const searchInput = useRef(null);
   const [initialPosition, setInitialPosition] = useState(null);
   const [resultData, setResultData] = useState(null);
+  const [pageError, setPageError] = useState("");
   
   // 使用下载进度 Hook
   const { progress, text, setText, createProgressHandler } = useDownloadProgress();
@@ -43,37 +134,90 @@ const Cas12Result = () => {
     const initializeData = async () => {
       try {
         setLoading(true);
+        setPageError("");
 
-        // 从 router state 读取参数
-        const { apiParams } = location.state || {};
+        setText("Fetching result from server...");
+        const resolution = await resolveDesignResult({
+          searchParams,
+          locationState: location.state,
+          executeRequest: executeCas12Design,
+          getRequest: getCas12Result,
+          createProgressHandler,
+          buildTaskParams: (taskId, apiParams, currentSearchParams) => ({
+            task_id: taskId,
+            cas_type:
+              currentSearchParams.get("cas_type") ||
+              currentSearchParams.get("casType") ||
+              apiParams?.cas_type,
+          }),
+          isReady: (data) => Boolean(data?.TableData && data?.JbrowseInfo),
+        });
 
-        if (!apiParams) {
-          message.error("Design result data not found, please redesign");
-          setLoading(false);
-          setTimeout(() => {
-            navigate("/cas12/cpf1");
-          }, 2000);
+        if (resolution.status !== "success") {
+          setPageError(resolution.error);
+          if (resolution.status === "pending") {
+            message.info(resolution.error);
+          } else {
+            message.error(resolution.error);
+          }
           return;
         }
 
-        setUserParameters(apiParams);
+        const data = resolution.data;
+        setText('Processing data...');
+        setUserParameters(extractUserParameters(resolution.apiParams, data));
+        setResultData(data);
 
-        setText('Fetching data from server...');
 
-        // 使用参数请求结果
-        const response = await executeCas12Design(apiParams, createProgressHandler());
 
-        if (response && response.data) {
-          if (response.data.TableData && response.data.JbrowseInfo) {
-            setText('Processing data...');
-            setResultData(response.data);
-
-            const { assembly, tracks, position } = response.data.JbrowseInfo;
+            const { assembly, tracks, position } = data.JbrowseInfo;
             setInitialPosition(position);
 
             setText('Loading genome information...');
-            const indexResponse = await fetch(processUrl(tracks.gff3_tbi));
-            const indexType = indexResponse.headers.get('Content-Disposition').split('.gff3.gz.')[1].split('"')[0] === 'tbi' ? 'TBI' : 'CSI';
+            const indexType = await resolveIndexType(tracks.gff3_tbi);
+            const hasGenesTrack = Boolean(tracks.genes_gff3_gz && tracks.genes_gff3_tbi);
+            const genesIndexType = hasGenesTrack
+              ? await resolveIndexType(tracks.genes_gff3_tbi)
+              : null;
+
+            const jbrowseTracks = [
+              createFeatureTrackConfig({
+                trackId: "file.gff3",
+                name: tracks.name,
+                assemblyName: assembly.name,
+                gff3Url: tracks.gff3_gz,
+                indexUrl: tracks.gff3_tbi,
+                indexType,
+              }),
+            ];
+
+            const sessionTracks = [
+              createLinearDisplayTrack({
+                id: "feature-track",
+                configuration: "file.gff3",
+              }),
+            ];
+
+            if (hasGenesTrack) {
+              jbrowseTracks.push(
+                createFeatureTrackConfig({
+                  trackId: "genes.gff3",
+                  name: tracks.genes_name || "Genes",
+                  assemblyName: assembly.name,
+                  gff3Url: tracks.genes_gff3_gz,
+                  indexUrl: tracks.genes_gff3_tbi,
+                  indexType: genesIndexType,
+                })
+              );
+
+              sessionTracks.push(
+                createLinearDisplayTrack({
+                  id: "genes-track",
+                  configuration: "genes.gff3",
+                  heightPreConfig: 160,
+                })
+              );
+            }
     
 
             setText('Initializing genome browser...');
@@ -97,28 +241,7 @@ const Cas12Result = () => {
                   },
                 },
               },
-              tracks: [
-                {
-                  type: "FeatureTrack",
-                  trackId: "file.gff3",
-                  name: tracks.name,
-                  assemblyNames: [assembly.name],
-                  adapter: {
-                    type: "Gff3TabixAdapter",
-                    gffGzLocation: {
-                      uri: processUrl(tracks.gff3_gz),
-                      locationType: "UriLocation",
-                    },
-                    index: {
-                      location: {
-                        uri: processUrl(tracks.gff3_tbi),
-                        locationType: "UriLocation",
-                      },
-                      indexType: indexType,
-                    },
-                  },
-                },
-              ],
+              tracks: jbrowseTracks,
               location: position,
               defaultSession: {
                 id: "default-session",
@@ -146,22 +269,7 @@ const Cas12Result = () => {
                       assemblyName: assembly.name,
                     },
                   ],
-                  tracks: [
-                    {
-                      id: "feature-track",
-                      type: "FeatureTrack",
-                      configuration: "file.gff3",
-                      minimized: false,
-                      displays: [
-                        {
-                          id: "feature-display",
-                          type: "LinearBasicDisplay",
-                          heightPreConfig: 200,
-                          configuration: "file.gff3-LinearBasicDisplay",
-                        },
-                      ],
-                    },
-                  ],
+                  tracks: sessionTracks,
                   hideHeader: false,
                   hideHeaderOverview: false,
                   hideNoTracksActive: false,
@@ -180,8 +288,8 @@ const Cas12Result = () => {
             
             setText('Finalizing initialization...');
             // 设置初始选中行
-            if (response.data.TableData?.json_data?.rows?.length > 0) {
-              const firstRow = response.data.TableData.json_data.rows[0];
+            if (data.TableData?.json_data?.rows?.length > 0) {
+              const firstRow = data.TableData.json_data.rows[0];
               setSelectedRow(firstRow);
               setOffTargetData(
                 firstRow.offtarget_json?.rows?.length > 0 
@@ -192,44 +300,18 @@ const Cas12Result = () => {
 
             setText('Initialization complete!');
             message.success("Data loaded successfully");
-          } else {
-            const errorMsg = response.data.error || response.data.msg || "Failed to get result data";
-            message.error(errorMsg);
-            setTimeout(() => {
-              navigate("/cas12/cpf1");
-            }, 2000);
-          }
-        } else {
-          message.error("Response format error, please redesign");
-          setTimeout(() => {
-            navigate("/cas12/cpf1");
-          }, 2000);
-        }
       } catch (error) {
         console.error("Initialization failed:", error);
-        let errorMsg = "";
-        if (error.response) {
-          if (typeof error.response.data === 'string') {
-            errorMsg = error.response.data;
-          } else {
-            errorMsg = error.response.data?.error || error.response.data?.msg || error.response.data?.message || `Request failed: ${error.response.status}`;
-          }
-        } else if (error.request) {
-          errorMsg = "Network error, please check your network connection";
-        } else {
-          errorMsg = error?.message || "Request failed, please try again later";
-        }
-        message.error(errorMsg);
-        setTimeout(() => {
-          navigate("/cas12/cpf1");
-        }, 2000);
+        const errorText = error?.message || "Data loading failed";
+        setPageError(errorText);
+        message.error("Data loading failed: " + errorText);
       } finally {
         setLoading(false);
       }
     };
 
     initializeData();
-  }, [location, navigate]);
+  }, []);
   // 参数展示组件
   const renderParameterItem = (label, value) => {
     return (
@@ -337,7 +419,7 @@ const Cas12Result = () => {
   const handleNavigate = (position) => {
     if (jbrowseState) {
       try {
-        jbrowseState.session.view.navToLocString(position);
+        jbrowseState.session.view.navToLocString(normalizeLocString(position));
       } catch (error) {
         console.error("Navigation failed:", error);
         message.error("Genome view navigation failed");
@@ -561,12 +643,13 @@ const Cas12Result = () => {
   if (!resultData) {
     return (
       <div className="error-container">
-        <p>Failed to load result data</p>
+        <p>{pageError || "Failed to load result data"}</p>
       </div>
     );
   }
   return (
-    <div className="cas12-result-container">
+    <div className="cas12-result-container result-page-shell">
+      <GlobalFullscreenToggle />
       {/* 参数部分 */}
       <div className="result-section">
         <Title level={3}>Set Parameters</Title>

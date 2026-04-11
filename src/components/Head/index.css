@@ -1,8 +1,8 @@
 /* 导航栏整体 */
 .navigation-header {
-  height: 60px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
   padding: 10px 20px;
   gap: 20px;
@@ -12,14 +12,35 @@
 .navigation-logo {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex: 1 1 1200px;
+  width: auto;
 }
-.navigation-logo img {
+.navigation-brand-group {
+  display: flex;
+  align-items: center;
+  /* gap: 18px; */
+  flex: 1;
+  min-width: 0;
+}
+.navigation-main-logo {
   width: 100px;
   cursor: pointer;
+  flex-shrink: 0;
 }
-.navigation-logo span {
-  font-size: 20px;
-  font-weight: 500;
+.navigation-title {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #12302a;
+}
+.navigation-gep-logo {
+  width: 110px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 /* 导航栏社交媒体部分样式 */
 .navigation-social {
@@ -31,7 +52,7 @@
 .head-social-media-title {
   background-color: #f1faf8;
   padding: 5px 30px;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   border-radius: 35px;
 }
@@ -42,8 +63,81 @@
 }
 .head-social-media-list li a {
   color: black;
-  font-size: 24px;
+  font-size: 26px;
 }
+
+@media (max-width: 1000px) {
+  .navigation-logo {
+    flex-wrap: wrap;
+  }
+
+  .navigation-title {
+    font-size: 24px;
+  }
+
+  .navigation-gep-logo {
+    width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navigation-header {
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .navigation-logo {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "main gep"
+      "title title";
+    align-items: center;
+    row-gap: 12px;
+    column-gap: 16px;
+    width: 100%;
+  }
+
+  .navigation-brand-group {
+    display: contents;
+  }
+
+  .navigation-main-logo {
+    grid-area: main;
+    width: 84px;
+  }
+
+  .navigation-gep-logo {
+    grid-area: gep;
+    width: 96px;
+    justify-self: end;
+  }
+
+  .navigation-title {
+    grid-area: title;
+    font-size: 20px;
+    line-height: 1.35;
+  }
+
+  .navigation-social {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .head-social-media-title {
+    padding: 5px 18px;
+    font-size: 18px;
+  }
+
+  .head-social-media-list {
+    padding-left: 0;
+    margin: 0;
+    gap: 16px;
+  }
+}
+
 /* 菜单栏样式 */
 .navigation-menu-container {
   background-color: #e1ece8;
@@ -105,46 +199,19 @@
     hue-rotate(202deg) brightness(95%) contrast(87%);
 }
 
-.navigation-center {
-  display: flex;
-  align-items: center;   /* ✅ 垂直居中核心 */
-  justify-content: center; /* 可选：水平居中 */
-  height: 100%;          /* 关键：继承父高度 */
-}
-
-
-/* ===== 左侧：Logo标题 ===== */
-.navigation-logo span {
-  font-size: 24px;   /* 原20 → 更突出 */
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-/* ===== 社交标题 ===== */
-.head-social-media-title {
-  font-size: 20px;   /* 原18 → 更清晰 */
-  font-weight: 600;
-  padding: 6px 35px; /* 略放大 */
-}
-
-/* ===== 社交图标 ===== */
-.head-social-media-list li a {
-  font-size: 28px;   /* 原24 → 更醒目 */
-}
-
-/* ===== 菜单字体（重点！）===== */
+/* 菜单字体增强 */
 .ant-menu {
-  font-size: 18px;   /* 控制整体菜单字体 */
+  font-size: 16px;
 }
 
 .ant-menu-item,
 .ant-menu-submenu-title {
-  font-size: 18px !important;
-  font-weight: 500;
+  font-size: 16px !important;
+  font-weight: 600 !important;
 }
 
-/* hover更清晰 */
 .ant-menu-item:hover,
+.ant-menu-item-selected,
 .ant-menu-submenu-title:hover {
-  font-weight: 600;
+  font-weight: 700 !important;
 }

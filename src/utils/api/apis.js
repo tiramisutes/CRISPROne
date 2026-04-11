@@ -1,4 +1,4 @@
-import { post } from "@/utils/request";
+import { get, post } from "@/utils/request";
 
 /**
  * Knockin设计API接口
@@ -58,5 +58,40 @@ export const executeCRISPREpigenomeDesign = async (params, onDownloadProgress) =
     name_db: params.targetGenome,
   }, {
     onDownloadProgress: onDownloadProgress,
+  });
+};
+
+/**
+ * 查询结果接口
+ * @param { task_id: string } params
+ * @returns {Promise} API响应结果
+ */
+export const getKnockinResult = async (params) => {
+  return get("/crisprKnockin/execute/", {
+    task_id: params.task_id,
+  });
+};
+
+
+/**
+ * 查询结果接口
+ * @param { task_id: string } params
+ * @returns {Promise} API响应结果
+ */
+export const getCRISPRaResult = async (params) => {
+  return get("/crisprA/execute/", {
+    task_id: params.task_id,
+  });
+};
+
+
+/**
+ * 查询结果接口
+ * @param { task_id: string } params
+ * @returns {Promise} API响应结果
+ */
+export const getCRISPREpigenomeResult = async (params) => {
+  return get("/crisprEpigenome/execute/", {
+    task_id: params.task_id,
   });
 };

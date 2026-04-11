@@ -1,0 +1,96 @@
+.result-page-shell {
+  position: relative;
+  width: 90%;
+  margin: 0 auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+.result-page-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
+
+.result-page-action-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e1e5e9;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  color: #246bf7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.result-page-action-button:hover {
+  color: #4caf50;
+  border-color: #4caf50;
+}
+
+.result-page-action-button:focus-visible {
+  outline: 2px solid rgba(36, 107, 247, 0.25);
+  outline-offset: 2px;
+}
+
+.result-page-action-button .anticon {
+  font-size: 18px;
+}
+
+html:fullscreen,
+html:-webkit-full-screen,
+html:fullscreen body,
+html:-webkit-full-screen body,
+html:fullscreen #root,
+html:-webkit-full-screen #root {
+  background-color: #fff;
+}
+
+html:fullscreen body,
+html:-webkit-full-screen body {
+  overflow: auto;
+}
+
+html:fullscreen .navigation-header,
+html:fullscreen .navigation-menu-container,
+html:fullscreen .app-footer,
+html:-webkit-full-screen .navigation-header,
+html:-webkit-full-screen .navigation-menu-container,
+html:-webkit-full-screen .app-footer {
+  display: none !important;
+}
+
+html:fullscreen .result-page-actions,
+html:-webkit-full-screen .result-page-actions {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 2000;
+}
+
+@media (max-width: 768px) {
+  .result-page-actions {
+    top: 16px;
+    right: 16px;
+    gap: 8px;
+  }
+
+  .result-page-action-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  html:fullscreen .result-page-actions,
+  html:-webkit-full-screen .result-page-actions {
+    top: 12px;
+    right: 12px;
+  }
+}

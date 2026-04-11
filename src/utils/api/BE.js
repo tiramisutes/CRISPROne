@@ -1,4 +1,4 @@
-import { post } from "@/utils/request";
+import { get, post } from "@/utils/request";
 
 /**
  * Base Editor设计API接口
@@ -19,3 +19,14 @@ export const executeBEDesign = async (params, onDownloadProgress) => {
         onDownloadProgress: onDownloadProgress,
     });
 }
+
+/**
+ * 查询结果接口
+ * @param { task_id: string } params
+ * @returns {Promise} API响应结果
+ */
+export const getBEResult = async (params) => {
+  return get("/baseEditor/execute/", {
+    task_id: params.task_id,
+  });
+};

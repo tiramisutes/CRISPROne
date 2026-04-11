@@ -8,6 +8,7 @@ import {
   SGRNA_MODULE_OPTIONS,
 } from "@/utils/datas/formOptions";
 import styles from "./index.module.css";
+import { useUnavailableFeatureNotification } from "@/utils/unavailableFeature";
 
 
 const { TextArea } = Input;
@@ -28,8 +29,12 @@ const Translocation = () => {
 
 
   // 处理表单提交
-  const handleSubmit = () => {
-    alert("Submitting is disabled in demo version.");
+  const { contextHolder, showUnavailableFeatureMessage } =
+    useUnavailableFeatureNotification();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    showUnavailableFeatureMessage();
   };
 
   const handleExampleClick = (type) => {
@@ -86,6 +91,7 @@ const Translocation = () => {
 
   return (
     <div className={styles.deletionContainer}>
+      {contextHolder}
       <div className={styles.deletionHeader}>
         <div className={styles.deletionImage}>
           <img src={translocationImage} alt="translocation" />
@@ -94,6 +100,11 @@ const Translocation = () => {
           <h1>Design of Fragment Translocation Editing guide RNAs</h1>
           <p>
             Base editors (BE) have two principal components that are fused together to form a single protein: (i) a CRISPR protein, bound to a guide RNA, and (ii) a base editing enzyme, such as a deaminase, which carries out the desired chemical modification of the target DNA base.
+            <InfoCircleOutlined
+              onClick={() => {
+                alert("info");
+              }}
+            />
           </p>
           <h2>Advantages:</h2>
           <ul>
@@ -106,7 +117,7 @@ const Translocation = () => {
 
       {/* 下部分：表单 */}
       <div className={styles.deletionForm}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
 
           <div className={styles.formGroup}>
             <div className={styles.noteSection}>

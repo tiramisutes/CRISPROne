@@ -167,6 +167,11 @@ const BaseEditor = () => {
             guide RNA, and (ii) a base editing enzyme, such as a deaminase,
             which carries out the desired chemical modification of the target
             DNA base.
+            <InfoCircleOutlined
+              onClick={() => {
+                alert("info");
+              }}
+            />
           </p>
           <h2>Advantages:</h2>
           <ul>

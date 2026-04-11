@@ -142,6 +142,7 @@ const Cas12C2c1 = () => {
         ref={pollingLoaderRef}
         apiFunction={executeCas12Design}
         resultPath="/cas12/result"
+        getResultQueryParams={({ taskId, formData }) => ({ task_id: taskId, cas_type: formData?.cas_type })}
         getFormData={getFormData}
       />
       <div className="cas12-header">
@@ -158,6 +159,11 @@ const Cas12C2c1 = () => {
             impossible to use it in mammalian and plant cells. Fortunately,
             scientists have found several other Cas12b variants which cleave DNA
             at lower temperatures.
+            <InfoCircleOutlined
+              onClick={() => {
+                alert("info");
+              }}
+            />
           </p>
           <h2>Components:</h2>
           <ul>

@@ -10,14 +10,16 @@ import {
   Dropdown,
 } from "antd";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   JBrowseLinearGenomeView,
   createViewState,
 } from "@jbrowse/react-linear-genome-view";
-import { executeIscBDesign } from "@/utils/api/iscB";
+import { executeIscBDesign, getIscBResult } from "@/utils/api/iscB";
+import { extractUserParameters, resolveDesignResult } from "@/utils/designResult";
 import { useDownloadProgress } from "@/hooks/useDownloadProgress";
 import LoadingProgress from "@/components/LoadingProgress";
+import GlobalFullscreenToggle from "@/components/GlobalFullscreenToggle";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./index.css";
@@ -81,11 +83,99 @@ export const processMdAndSequence = (md, sequence) => {
   return processedSeq;
 };
 
+const getIndexTypeFromUrl = (url) => {
+  if (!url) return "CSI";
+
+  const normalizedUrl = url.toLowerCase();
+
+  if (normalizedUrl.includes(".tbi")) {
+    return "TBI";
+  }
+
+  if (normalizedUrl.includes(".csi")) {
+    return "CSI";
+  }
+
+  return "CSI";
+};
+
+const resolveIndexType = async (indexUrl) => {
+  const normalizedUrl = processUrl(indexUrl);
+
+  try {
+    const response = await fetch(normalizedUrl, { method: "HEAD" });
+    const contentDisposition =
+      response.headers.get("Content-Disposition") || "";
+    const normalizedHeader = contentDisposition.toLowerCase();
+
+    if (normalizedHeader.includes(".tbi")) {
+      return "TBI";
+    }
+
+    if (normalizedHeader.includes(".csi")) {
+      return "CSI";
+    }
+  } catch (error) {
+    console.warn("Failed to resolve JBrowse index type:", error);
+  }
+
+  return getIndexTypeFromUrl(indexUrl);
+};
+
+const createFeatureTrackConfig = ({
+  trackId,
+  name,
+  assemblyName,
+  gff3Url,
+  indexUrl,
+  indexType,
+}) => ({
+  type: "FeatureTrack",
+  trackId,
+  name,
+  assemblyNames: [assemblyName],
+  adapter: {
+    type: "Gff3TabixAdapter",
+    gffGzLocation: {
+      uri: processUrl(gff3Url),
+      locationType: "UriLocation",
+    },
+    index: {
+      location: {
+        uri: processUrl(indexUrl),
+        locationType: "UriLocation",
+      },
+      indexType,
+    },
+  },
+});
+
+const createLinearDisplayTrack = ({
+  id,
+  configuration,
+  heightPreConfig = 200,
+}) => ({
+  id,
+  type: "FeatureTrack",
+  configuration,
+  minimized: false,
+  displays: [
+    {
+      id: `${id}-display`,
+      type: "LinearBasicDisplay",
+      heightPreConfig,
+      configuration: `${configuration}-LinearBasicDisplay`,
+    },
+  ],
+});
+
 const Result = () => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [jbrowseState, setJbrowseState] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resultData, setResultData] = useState(null);
+  const [pageError, setPageError] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState(["Guide_0"]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [offTargetData, setOffTargetData] = useState(null);
@@ -436,38 +526,83 @@ const Result = () => {
     const initializeData = async () => {
       try {
         setLoading(true);
+        setPageError("");
 
-        // 从 router state 读取数据
-        const { apiParams } = location.state || {};
+        setText("Fetching result from server...");
+        const resolution = await resolveDesignResult({
+          searchParams,
+          locationState: location.state,
+          executeRequest: executeIscBDesign,
+          getRequest: getIscBResult,
+          createProgressHandler,
+          isReady: (data) => Boolean(data?.TableData && data?.JbrowseInfo),
+        });
 
-        setText('Fetching data from server...');
-
-        const responseData = await executeIscBDesign(apiParams, createProgressHandler());
-
-        if (!responseData.data) {
-          message.error("Design result data not found, please redesign");
-          setLoading(false);
+        if (resolution.status !== "success") {
+          setPageError(resolution.error);
+          if (resolution.status === "pending") {
+            message.info(resolution.error);
+          } else {
+            message.error(resolution.error);
+          }
           return;
         }
 
-        // 设置用户参数
+        const data = resolution.data;
         setText('Processing data...');
-        if (apiParams) {
-          setUserParameters(apiParams);
-        }
-
-        // 设置响应数据
-        const data = responseData.data;
-
+        setUserParameters(extractUserParameters(resolution.apiParams, data));
         setResultData(data);
+
+
 
         const { assembly, tracks, position } = data.JbrowseInfo;
         setInitialPosition(position);
 
-        // 先请求一次
         setText('Loading genome information...');
-        const response = await fetch(processUrl(tracks.gff3_tbi));
-        const indexType = response.headers.get('Content-Disposition').split('.gff3.gz.')[1].split('"')[0] === 'tbi' ? 'TBI' : 'CSI';
+        const indexType = await resolveIndexType(tracks.gff3_tbi);
+        const hasGenesTrack = Boolean(tracks.genes_gff3_gz && tracks.genes_gff3_tbi);
+        const genesIndexType = hasGenesTrack
+          ? await resolveIndexType(tracks.genes_gff3_tbi)
+          : null;
+
+        const jbrowseTracks = [
+          createFeatureTrackConfig({
+            trackId: "file.gff3",
+            name: tracks.name,
+            assemblyName: assembly.name,
+            gff3Url: tracks.gff3_gz,
+            indexUrl: tracks.gff3_tbi,
+            indexType,
+          }),
+        ];
+
+        const sessionTracks = [
+          createLinearDisplayTrack({
+            id: "feature-track",
+            configuration: "file.gff3",
+          }),
+        ];
+
+        if (hasGenesTrack) {
+          jbrowseTracks.push(
+            createFeatureTrackConfig({
+              trackId: "genes.gff3",
+              name: tracks.genes_name || "Genes",
+              assemblyName: assembly.name,
+              gff3Url: tracks.genes_gff3_gz,
+              indexUrl: tracks.genes_gff3_tbi,
+              indexType: genesIndexType,
+            })
+          );
+
+          sessionTracks.push(
+            createLinearDisplayTrack({
+              id: "genes-track",
+              configuration: "genes.gff3",
+              heightPreConfig: 160,
+            })
+          );
+        }
 
         // 初始化JBrowse状态
         setText('Initializing genome browser...');
@@ -480,39 +615,18 @@ const Result = () => {
                 "Gossypium_hirsutum_T2T-Jin668_HZAU_genome-ReferenceSequenceTrack",
               adapter: {
                 type: "IndexedFastaAdapter",
-              fastaLocation: {
-                uri: processUrl(assembly.fasta),
-                locationType: "UriLocation",
-              },
-              faiLocation: {
-                uri: processUrl(assembly.fai),
-                locationType: "UriLocation",
-              },
+                fastaLocation: {
+                  uri: processUrl(assembly.fasta),
+                  locationType: "UriLocation",
+                },
+                faiLocation: {
+                  uri: processUrl(assembly.fai),
+                  locationType: "UriLocation",
+                },
               },
             },
           },
-          tracks: [
-            {
-              type: "FeatureTrack",
-              trackId: "file.gff3",
-              name: tracks.name,
-              assemblyNames: [assembly.name],
-              adapter: {
-                type: "Gff3TabixAdapter",
-                gffGzLocation: {
-                  uri: processUrl(tracks.gff3_gz),
-                  locationType: "UriLocation",
-                },
-                index: {
-                  location: {
-                    uri: processUrl(tracks.gff3_tbi),
-                    locationType: "UriLocation",
-                  },
-                  indexType: indexType,
-                },
-              },
-            },
-          ],
+          tracks: jbrowseTracks,
           location: position,
           defaultSession: {
             id: "default-session",
@@ -540,22 +654,7 @@ const Result = () => {
                   assemblyName: assembly.name,
                 },
               ],
-              tracks: [
-                {
-                  id: "feature-track",
-                  type: "FeatureTrack",
-                  configuration: "file.gff3",
-                  minimized: false,
-                  displays: [
-                    {
-                      id: "feature-display",
-                      type: "LinearBasicDisplay",
-                      heightPreConfig: 200,
-                      configuration: "file.gff3-LinearBasicDisplay",
-                    },
-                  ],
-                },
-              ],
+              tracks: sessionTracks,
               hideHeader: false,
               hideHeaderOverview: false,
               hideNoTracksActive: false,
@@ -588,7 +687,9 @@ const Result = () => {
         message.success("Data loaded successfully");
       } catch (error) {
         console.error("Initialization failed:", error);
-        message.error("Data loading failed: " + error.message);
+        const errorText = error?.message || "Data loading failed";
+        setPageError(errorText);
+        message.error("Data loading failed: " + errorText);
       } finally {
         setLoading(false);
       }
@@ -604,13 +705,14 @@ const Result = () => {
   if (!resultData) {
     return (
       <div className="error-container">
-        <p>Failed to load result data</p>
+        <p>{pageError || "Failed to load result data"}</p>
       </div>
     );
   }
 
   return (
-    <div className="cas9-result-container">
+    <div className="cas9-result-container result-page-shell">
+      <GlobalFullscreenToggle />
       {/* 参数部分 */}
       <div className="result-section">
         <Title level={3}>Set Parameters</Title>
@@ -637,10 +739,10 @@ const Result = () => {
                       "Target Genome",
                       userParameters.name_db
                     )}
-                    {renderParameterItem(
+                    {/* {renderParameterItem(
                       "Customized PAM",
                       userParameters.customizedPAM
-                    )}
+                    )} */}
                     {renderParameterItem(
                       "Spacer Length",
                       userParameters.spacerLength

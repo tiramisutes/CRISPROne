@@ -1,4 +1,4 @@
-import { post } from "@/utils/request";
+import { get, post } from "@/utils/request";
 
 /**
  * Cas9设计API接口
@@ -12,14 +12,30 @@ import { post } from "@/utils/request";
  * @returns {Promise} API响应结果
  */
 export const executeCas9Design = async (params, onDownloadProgress) => {
-  return post("/cas9/execute/", {
-    inputSequence: params.inputSequence,
-    pam: params.pam,
-    spacerLength: params.spacerLength,
-    sgRNAModule: params.sgRNAModule,
-    name_db: params.name_db,
-  }, {
-    onDownloadProgress: onDownloadProgress,
+  return post(
+    "/cas9/execute/",
+    {
+      inputSequence: params.inputSequence,
+      pam: params.pam,
+      spacerLength: params.spacerLength,
+      sgRNAModule: params.sgRNAModule,
+      name_db: params.name_db,
+    },
+    {
+      onDownloadProgress,
+    }
+  );
+};
+
+/**
+ * Cas9结果查询接口
+ * @param {Object} params - 请求参数
+ * @param {string} params.task_id - 任务ID
+ * @returns {Promise} API响应结果
+ */
+export const getCas9Result = async (params) => {
+  return get("/cas9/execute/", {
+    task_id: params.task_id,
   });
 };
 
@@ -30,9 +46,9 @@ export const executeCas9Design = async (params, onDownloadProgress) => {
  */
 export const transformFormDataToApiParams = (formData) => {
   return {
-    inputSequence: formData.inputSequences, // 注意字段名的转换
+    inputSequence: formData.inputSequences,
     pam: formData.pamType,
-    spacerLength: formData.spacerLength.toString(), // 确保是字符串格式
+    spacerLength: formData.spacerLength.toString(),
     sgRNAModule: formData.sgrnaModule,
     name_db: formData.targetGenome,
     customizedPAM: formData.customizedPAM,

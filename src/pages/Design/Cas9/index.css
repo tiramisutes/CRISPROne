@@ -325,9 +325,23 @@
    ======================================== */
 .cas9-result-container {
   padding: 20px;
-  max-width: 1400px;
+  max-width: none;
   margin: 0 auto;
+  position: relative;
+  background-color: #fff;
 }
+
+.cas9-result-container:fullscreen,
+.cas9-result-container:-webkit-full-screen {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #fff;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
 
 .loading-container {
   display: flex;
@@ -546,6 +560,7 @@
   .cas9-result-container {
     padding: 12px;
   }
+
 
   .browser-controls {
     flex-wrap: wrap;

@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button, Spin, message, Card, Table, Tabs, Progress, Row, Col, Tag } from "antd";
 import { ArrowLeftOutlined, BarChartOutlined, PieChartOutlined } from "@ant-design/icons";
 import { getResult } from "@/utils/api/editedAnalysis";
+import GlobalFullscreenToggle from "@/components/GlobalFullscreenToggle";
 import "./index.css";
 
 const { TabPane } = Tabs;
@@ -10,7 +11,7 @@ const { TabPane } = Tabs;
 const EditingAnalysisResult = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const taskId = searchParams.get("taskId");
+  const taskId = searchParams.get("task_id") || searchParams.get("taskId");
   const fileName = searchParams.get("fileName");
   
   const [loading, setLoading] = useState(true);
@@ -301,7 +302,8 @@ const EditingAnalysisResult = () => {
   };
   
   return (
-    <div className="editing-analysis-result-container">
+    <div className="editing-analysis-result-container result-page-shell">
+      <GlobalFullscreenToggle />
       <div className="result-header">
         <Button 
           type="primary" 

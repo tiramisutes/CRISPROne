@@ -152,7 +152,7 @@ const CRISPRKnockin = () => {
       />
       <div className="knockin-header">
         <div className="knockin-image">
-          <img src={CrisprKnockinImage} alt="CrisprKnockin" style={{ width: "1000px", height: "auto" }}/>
+          <img src={CrisprKnockinImage} alt="CrisprKnockin" />
         </div>
         <div className="knockin-intro">
           <h1>Design of CRISPR Knock-ins guide RNAs</h1>
@@ -163,6 +163,11 @@ const CRISPRKnockin = () => {
             The precision of the HDR repair pathway can be coupled with the
             specificity of CRISPR-Cas to introduce the desired sequence into the
             target genomic region.
+            <InfoCircleOutlined
+              onClick={() => {
+                alert("info");
+              }}
+            />
           </p>
           <h2>Optimizing Success With CRISPR Knock-in Experiments:</h2>
           <ul>

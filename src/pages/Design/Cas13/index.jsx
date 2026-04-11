@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import cas13Image from "@/assets/images/design/cas/cas13.png";
+import cas13Image from "@/assets/images/design/cas/cas13_fork.png";
 import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Input, Select, InputNumber } from "antd";
+import { useUnavailableFeatureNotification } from "@/utils/unavailableFeature";
 import { TARGET_GENOME_OPTIONS } from "@/utils/datas/formOptions";
 import "./index.css";
 
@@ -28,14 +29,18 @@ ATGTTGAAACAAGATGGAACTCTGTGTTCCTTCTCACCGTGCATGGAGCAAGTGCAACGTTCATGTGAAACTCTGAGATC
     setSelectedExample(false);
   };
 
+  const { contextHolder, showUnavailableFeatureMessage } =
+    useUnavailableFeatureNotification();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted");
+    showUnavailableFeatureMessage();
   };
 
   return (
     <div className="cas13-container">
       {/* 上部分：左图右文 */}
+      {contextHolder}
       <div className="cas13-header">
         <div className="cas13-image">
           <img src={cas13Image} alt="cas13" />
@@ -46,6 +51,12 @@ ATGTTGAAACAAGATGGAACTCTGTGTTCCTTCTCACCGTGCATGGAGCAAGTGCAACGTTCATGTGAAACTCTGAGATC
             The RNA-targeting endonuclease Cas13 (Type VI CRISPR) ability to
             selectively target cellular RNAs and influence gene expression
             without making permanent genetic changes.
+            <InfoCircleOutlined
+              style={{ marginLeft: '8px', cursor: 'pointer' }}
+              onClick={() => {
+                alert("Cas13 information");
+              }}
+            />
           </p>
           <h2>Advantages:</h2>
           <ul>
@@ -67,7 +78,7 @@ ATGTTGAAACAAGATGGAACTCTGTGTTCCTTCTCACCGTGCATGGAGCAAGTGCAACGTTCATGTGAAACTCTGAGATC
 
       {/* 下部分：表单 */}
       <div className="cas13-form">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="form-group">
             <label htmlFor="inputSequences">
               <span className="required">*</span> Input Sequences

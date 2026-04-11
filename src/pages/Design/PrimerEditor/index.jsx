@@ -6,6 +6,7 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import { Select, Input, Slider, Checkbox, Row, Col, InputNumber } from "antd";
+import { useUnavailableFeatureNotification } from "@/utils/unavailableFeature";
 import "./index.css";
 import {
   PAM_TYPE_OPTIONS,
@@ -15,8 +16,6 @@ import {
 
 const { Option } = Select;
 const { TextArea } = Input;
-
-const test = () => { }
 
 const PrimerEditor = () => {
   const [inputValue, setInputValue] = useState("");
@@ -48,9 +47,12 @@ const PrimerEditor = () => {
     setSelectedExample("");
   };
 
+  const { contextHolder, showUnavailableFeatureMessage } =
+    useUnavailableFeatureNotification();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted");
+    showUnavailableFeatureMessage();
   };
 
   // Extract spacer length from PAM type label (like Cas9)
@@ -83,6 +85,7 @@ const PrimerEditor = () => {
     <div className="primer-container">
 
       {/* 上部分：左图右文 */}
+      {contextHolder}
       <div className="primer-header">
         <div className="primer-image">
           <img src={PrimerImage} alt="Prime Editor" />
@@ -94,6 +97,12 @@ const PrimerEditor = () => {
             linked with Cas9 nickase are capable of generating targeted insertions,
             deletions, and base conversions without producing DNA double strand
             breaks or requiring any donor DNA.
+            <InfoCircleOutlined
+              style={{ marginLeft: '8px', cursor: 'pointer' }}
+              onClick={() => {
+                alert("Prime editing information");
+              }}
+            />
           </p>
           <h2>Advantages:</h2>
           <ul>
@@ -113,7 +122,7 @@ const PrimerEditor = () => {
 
       {/* 下部分：表单 */}
       <div className="primer-form">
-        <form onSubmit={test}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="form-group">
             <label htmlFor="inputSequences">
               <span className="required">*</span> Input Sequences

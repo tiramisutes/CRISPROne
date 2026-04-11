@@ -294,7 +294,7 @@ const EditingAnalysis = () => {
     if (taskId) {
       // 导航到结果页面，并传递任务ID和文件名
       navigate(
-        `/edited-analysis/editing-analysis/result?taskId=${taskId}&fileName=${fileName}`
+        `/edited-analysis/editing-analysis/result?task_id=${taskId}&fileName=${fileName}`
       );
     }
   };

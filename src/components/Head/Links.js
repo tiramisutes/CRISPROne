@@ -31,8 +31,16 @@ export const navItems = [
     path: "/edited-analysis",
     label: "Edited Analysis",
     children: [
-      { path: "http://jinlab.hzau.edu.cn/T2TCottonHub/barcode_design/", label: "Barcode", external: true },
-      { path: "http://122.205.95.222:8001/crispr_analysis_submit/", label: "Editing Analysis", external: true },
+      {
+        path: "http://jinlab.hzau.edu.cn/T2TCottonHub/barcode_design/",
+        label: "Barcode",
+        external: true,
+      },
+      {
+        path: "http://122.205.95.222:8001/crispr_analysis_submit/",
+        label: "Editing Analysis",
+        external: true,
+      },
       { path: "/edited-analysis/off-target", label: "Off-Target Analysis" },
     ],
   },
@@ -41,7 +49,11 @@ export const navItems = [
     label: "Protocol",
     children: [
       { path: "/protocol/plasmids-list", label: "Plasmids List" },
-      { path: "http://jinlab.hzau.edu.cn/GenomeEditingPlatform/plasmids/", label: "Get Plasmids", external: true },
+      {
+        path: "http://jinlab.hzau.edu.cn/GenomeEditingPlatform/plasmids/",
+        label: "Get Plasmids",
+        external: true,
+      },
     ],
   },
   { path: "/chat-crispr", label: "ChatCRISPR" },

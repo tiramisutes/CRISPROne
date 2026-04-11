@@ -4,92 +4,131 @@ import "./Home.css";
 import bannerImg from "../../assets/images/home/banner.png";
 import sgRNADesignImg from "../../assets/images/home/sgRNADesign.png";
 import editingImg from "../../assets/images/home/editing-analysis.png";
-import home01Img from "../../assets/images/home/home01.png";
-import home02Img from "../../assets/images/home/home02.png";
-import home03Img from "../../assets/images/home/home03.png";
+
+const hotspotPoints = [
+  { id: "1", left: "91%", top: "54%", href: "/cas9", title: "Cas9" },
+  { id: "2", left: "95%", top: "68%", href: "/cas12/cpf1", title: "Cas12" },
+  { id: "3", left: "50%", top: "59%", href: "/cas13", title: "Cas13" },
+  {
+    id: "4",
+    left: "49%",
+    top: "18.5%",
+    href: "/base-editor",
+    title: "Base Editor",
+  },
+  {
+    id: "5",
+    left: "95%",
+    top: "22%",
+    href: "/primer-editor",
+    title: "Primer Editor",
+  },
+  { id: "6", left: "48%", top: "88%", href: "/crispra", title: "CRISPRa" },
+  {
+    id: "7",
+    left: "10%",
+    top: "60%",
+    href: "/edited-analysis/editing-analysis",
+    title: "Edited Analysis",
+  },
+  {
+    id: "8",
+    left: "71%",
+    top: "52%",
+    href: "/chat-crispr",
+    title: "ChatCRISPR",
+  },
+  {
+    id: "9",
+    left: "36%",
+    top: "12%",
+    href: "/fragment-editor/deletion",
+    title: "Fragment Editor",
+  },
+  {
+    id: "10",
+    left: "4%",
+    top: "92%",
+    href: "/crispr-knockin",
+    title: "CRISPR Knock-in",
+  },
+  {
+    id: "11",
+    left: "80%",
+    top: "10%",
+    href: "/crispr-epigenome",
+    title: "CRISPR Epigenome",
+  },
+  {
+    id: "12",
+    left: "24%",
+    top: "92%",
+    href: "/TnpB",
+    title: "TnpB/IscB",
+  },
+  { id: "13", left: "30%", top: "88%", href: "/FanZor", title: "FanZor" },
+  {
+    id: "14",
+    left: "82%",
+    top: "88%",
+    href: "/edited-analysis/off-target",
+    title: "Off-target Analysis",
+  },
+];
+
+const designFeatures = [
+  {
+    title: "🧬 High-Quality Genomes & Flexible PAM Settings",
+    description:
+      "Integrated T2T genomes, multiple Cas systems, and customizable PAM settings ensure high accuracy and strong scalability.",
+  },
+  {
+    title: "⚡ Real-Time, Multi-Parameter Off-Target Evaluation",
+    description:
+      "Fast genome-wide scanning with functional annotation such as exon and intron context enables precise and meaningful off-target evaluation.",
+  },
+  {
+    title: "🔬 Multi-Dimensional sgRNA Screening Strategies",
+    description:
+      "Combines conserved domains with ATAC-seq, ChIP-seq, and Hi-C data for biologically informed sgRNA selection.",
+  },
+  {
+    title: "🎯 Personalized Design for Different Editing Scenarios",
+    description:
+      "Tailored design for different Cas systems and applications, including functional evaluation for base editing.",
+  },
+  {
+    title: "🚀 In Summary",
+    description: "CRISPRone combines scalability, speed, and biological insight to deliver a next-generation sgRNA design experience that helps researchers achieve high precision, low off-target effects, and context-aware editing outcomes."
+  }
+];
+
+const analysisFeatures = [
+  {
+    title: "🧬 Barcode-Based Detection",
+    description:
+      "Supports multiplex detection using barcode primers and high-throughput sequencing for efficient analysis of multiple samples.",
+  },
+  {
+    title: "📊 Mutation Profiling",
+    description:
+      "Outputs editing efficiency, mutation types, and frequencies for each sample in pooled datasets.",
+  },
+  {
+    title: "🌾 Polyploid Support",
+    description:
+      "Automatically distinguishes subgenomes and identifies mutation patterns using homologous chromosome sequences.",
+  },
+  {
+    title: "🎯 Editing Accuracy Assessment",
+    description:
+      "Uses deep resequencing (>50×) and genome-wide variation analysis to evaluate editing precision, with local tools for efficient processing of large datasets.",
+  },
+];
 
 const Home = () => {
   const navigate = useNavigate();
 
-  // 定义交互式定位点的数据
-  const points = [
-    { id: "1", left: "91%", top: "54%", href: "/cas9", title: "Cas9" },
-    { id: "2", left: "95%", top: "68%", href: "/cas12/cpf1", title: "Cas12" },
-    { id: "3", left: "50%", top: "59%", href: "/cas13", title: "Cas13" },
-    {
-      id: "4",
-      left: "49%",
-      top: "18.5%",
-      href: "/base-editor",
-      title: "Base Editor",
-    },
-    {
-      id: "5",
-      left: "95%",
-      top: "22%",
-      href: "/primer-editor",
-      title: "Primer Editor",
-    },
-    { id: "6", left: "48%", top: "88%", href: "/crispra", title: "CRISPRa" },
-    {
-      id: "7",
-      left: "10%",
-      top: "60%",
-      href: "http://122.205.95.222:8001/crispr_analysis_submit/",
-      title: "Edited Analysis",
-    },
-    {
-      id: "8",
-      left: "71%",
-      top: "52%",
-      href: "/chat-crispr",
-      title: "ChatCRISPR",
-    },
-    {
-      id: "9",
-      left: "36%",
-      top: "12%",
-      href: "/fragment-editor",
-      title: "Fragment Editor",
-    },
-    {
-      id: "10",
-      left: "4%",
-      top: "92%",
-      href: "/crispr-knockin",
-      title: "CRISPR Knock-in",
-    },
-    {
-      id: "11",
-      left: "80%",
-      top: "10%",
-      href: "/crispr-epigenome",
-      title: "CRISPR Epigenome",
-    },
-    {
-      id: "12",
-      left: "24%",
-      top: "92%",
-      href: "/TnpB",
-      title: "TnpB/IscB",
-    },
-    {
-      id: "13",
-      left: "30%",
-      top: "88%",
-      href: "/FanZor",
-      title: "FanZor",
-    },
-    {
-      id: "14",
-      left: "82%",
-      top: "88%",
-      href: "/edited-analysis/off-target",
-      title: "Off-target Analysis",
-    },
-  ];
-
-  // 背景图片模块样式 - 改为相对定位支持定位点
   const heroStyle = {
     height: "100%",
     position: "relative",
@@ -98,21 +137,20 @@ const Home = () => {
     overflow: "hidden",
   };
 
-  // 背景图片样式
   const backgroundImageStyle = {
     width: "100vw",
     height: "100%",
     objectFit: "cover",
-    pointerEvents: "none", // 防止图片本身被点击
+    pointerEvents: "none",
   };
 
-  // 左图右文模块样式
   const introStyle = {
     width: "90%",
     margin: "0 auto",
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
+    gap: "40px",
   };
 
   const introImageStyle = {
@@ -120,60 +158,22 @@ const Home = () => {
     height: "auto",
     borderRadius: "8px",
     overflow: "hidden",
+    flexShrink: 0,
   };
 
   const introTextStyle = {
     backgroundColor: "#f7fcfb",
     width: "35vw",
     fontSize: "16px",
-    lineHeight: "1.6",
+    lineHeight: "1.8",
     color: "#333",
-    boxShadow: "0px 2px 6px 0px rgba(0, 0, 0, .4)",
-    padding: "20px",
-    borderRadius: "8px",
-  };
-
-  // 卡片模块样式
-  const cardsStyle = {
-    display: "flex",
-    gap: "30px",
-    padding: "0 20px",
-    justifyContent: "center",
-  };
-
-  const cardStyle = {
-    width: "25vw",
-    height: "500px",
-    backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    padding: "15px",
-    textAlign: "center",
-    position: "relative",
-  };
-
-  const cardImageStyle = {
-    width: "100%",
-    height: "auto",
-    marginBottom: "10px",
-    objectFit: "cover",
-  };
-
-  const buttonStyle = {
-    backgroundColor: "#67ad5b",
-    color: "white",
-    border: "none",
-    padding: "10px 20px",
-    cursor: "pointer",
-    fontSize: "16px",
-    position: "absolute",
-    bottom: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
+    boxShadow: "0px 2px 6px 0px rgba(0, 0, 0, .15)",
+    padding: "28px",
+    borderRadius: "18px",
   };
 
   return (
     <div>
-      {/* 第一个模块：交互式背景图片 */}
       <div className="hero-section" style={heroStyle}>
         <img
           src={bannerImg}
@@ -181,40 +181,23 @@ const Home = () => {
           style={backgroundImageStyle}
         />
 
-        {/* 交互式定位点 */}
-        {points.map((point) => (
+        {hotspotPoints.map((point) => (
           <div
-          key={point.id}
-          className="point"
-          style={{
-            position: "absolute",
-            left: point.left,
-            top: point.top,
-            transform: "translate(-50%, -50%)",
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            if (point.href.startsWith("http")) {
-              window.open(point.href, "_blank");
-            } else {
-              navigate(point.href);
-            }
-          }}
-          title={point.title}
-        >
-            {/* 脉冲圆点 */}
+            key={point.id}
+            className="point"
+            style={{ left: point.left, top: point.top }}
+            onClick={() => navigate(point.href)}
+            title={point.title}
+          >
             <div className="pulse-wrapper">
               <div className="pulse-core"></div>
               <div className="pulse-ring"></div>
               <div className="pulse-ring delay"></div>
             </div>
-
-            {/* 标签文字 */}
             <div className="point-label">{point.title}</div>
           </div>
         ))}
 
-        {/* 标题文字覆盖层 */}
         <div className="banner-text">
           <h1 className="main-title">CRISPRone</h1>
           <h2 className="sub-title">
@@ -224,230 +207,70 @@ const Home = () => {
         </div>
       </div>
 
-      {/* 第二个模块：左图右文 */}
       <div className="intro-section" style={introStyle}>
         <div className="intro-image" style={introImageStyle}>
           <img
             src={sgRNADesignImg}
-            alt="CRISPRone Features"
+            alt="sgRNA design overview"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         </div>
         <div style={introTextStyle} className="intro-text">
-          <h2 style={{ marginBottom: "20px", color: "#2c3e50" }}>
-          Why Use CRISPRone for sgRNA Design?
-          </h2>
-          <p style={{ marginBottom: "20px" }}>
-            CRISPRone is a comprehensive tool set that can meet any demand
-            related to CRISPR. It includes <strong>sgRNA design</strong> of different CRISPR
-            variants and the <strong><a href="/edited-analysis/editing-analysis" target="_blank">edited analysis ↗<i className="bi bi-box-arrow-up-right external-icon"></i></a></strong> of transgenic plants.
+          <h2 className="home-section-title">Why Use CRISPRone for sgRNA Design?</h2>
+          <p className="home-lead">
+            CRISPRone is a comprehensive tool set that can meet diverse CRISPR
+            research needs. It integrates <strong>sgRNA design</strong> across
+            different CRISPR systems together with {" "}
+            <strong>
+              <a
+                className="home-inline-link"
+                href="/edited-analysis/editing-analysis"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                editing analysis ↗
+              </a>
+            </strong>
+            {" "}for transgenic plant studies.
           </p>
-          <section class="container py-5">
-            <div class="row g-4">
-              <div class="col-md-6">
-                <div class="p-4 border rounded-4 h-100 shadow-sm">
-                  <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>🧬 High-Quality Genomes & Flexible PAM Settings</h5>
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Integrated T2T genomes, multiple Cas systems, and customizable PAM settings 
-                    ensure high accuracy and strong scalability.
-                  </p>
-                </div>
-              </div>
 
-              <div class="col-md-6">
-                <div class="p-4 border rounded-4 h-100 shadow-sm">
-                  <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>⚡ Real-Time, Multi-Parameter Off-Target Evaluation</h5>
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Fast genome-wide scanning with functional annotation (exon/intron) 
-                    enables precise and meaningful off-target evaluation.
-                  </p>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="p-4 border rounded-4 h-100 shadow-sm">
-                  <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>🔬 Multi-Dimensional sgRNA Screening Strategies</h5>
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Combines conserved domains with ATAC-seq, ChIP-seq, and Hi-C data 
-                    for biologically informed sgRNA selection.
-                  </p>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="p-4 border rounded-4 h-100 shadow-sm">
-                  <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>🎯 Personalized Design for Different Editing Scenarios</h5>
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Tailored design for different Cas systems and applications, 
-                    including functional evaluation for base editing.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="text-center mt-5">
-              <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>🚀 In Summary</h5>
-              <p class="fw-semibold mb-0" style={{ marginBottom: "20px" }}>
-              CRISPRone combines scalability, speed, and biological insight to deliver a next-generation sgRNA design experience—helping researchers achieve high precision, low off-target effects, and context-aware editing outcomes.
+          <div className="home-text-list">
+            {designFeatures.map((feature) => (
+              <p key={feature.title} className="home-text-item">
+                <p><strong>{feature.title}: </strong></p>
+                {feature.description}
               </p>
-            </div>
-          </section>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* 第三个模块：左图右文 */}
       <div className="intro-section" style={introStyle}>
         <div className="intro-image" style={introImageStyle}>
           <img
             src={editingImg}
-            alt="CRISPRone Features"
+            alt="editing analysis overview"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         </div>
         <div style={introTextStyle} className="intro-text">
-          <section class="container py-5">
-            <h2 class="fw-bold text-center mb-4" style={{ marginBottom: "20px", color: "#2c3e50" }}>What is Editing Analysis?</h2>
+          <h2 className="home-section-title">What is Editing Analysis?</h2>
+          <p className="home-lead">
+            Editing analysis evaluates CRISPR experiments by measuring editing
+            efficiency and mutation patterns across multiple samples, helping
+            identify successfully edited plants.
+          </p>
 
-            <div class="row g-4">
-              <div class="col-12">
-                <div class="p-4 border rounded-4 shadow-sm">
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Editing analysis evaluates CRISPR experiments by measuring editing efficiency 
-                    and mutation patterns across multiple samples, helping identify successfully edited plants.
-                  </p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="p-4 border rounded-4 h-100 shadow-sm">
-                  <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>🧬 Barcode-Based Detection</h5>
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Supports multiplex detection using barcode primers and high-throughput sequencing 
-                    for efficient analysis of multiple samples.
-                  </p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="p-4 border rounded-4 h-100 shadow-sm">
-                  <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>📊 Mutation Profiling</h5>
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Outputs editing efficiency, mutation types, and frequencies 
-                    for each sample in pooled datasets.
-                  </p>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="p-4 border rounded-4 h-100 shadow-sm">
-                  <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>🌾 Polyploid Support</h5>
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Automatically distinguishes subgenomes and identifies mutation patterns 
-                    using homologous chromosome sequences.
-                  </p>
-                </div>
-              </div>
-
-              <div class="col-12">
-                <div class="p-4 border rounded-4 shadow-sm">
-                  <h5 class="fw-semibold" style={{ marginBottom: "15px", color: "#2c3e50", fontSize: "18px" }}>🎯 Editing Accuracy Assessment</h5>
-                  <p class="mb-0" style={{ marginBottom: "20px" }}>
-                    Uses deep resequencing (&gt;50×) and genome-wide variation analysis to evaluate editing precision. 
-                    Local tools are provided for efficient processing of large datasets.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
+          <div className="home-text-list">
+            {analysisFeatures.map((feature) => (
+              <p key={feature.title} className="home-text-item">
+                <p><strong>{feature.title}: </strong></p>
+                {feature.description}
+              </p>
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* 第三个模块：三张卡片 */}
-      {/* <div className="cards-section" style={cardsStyle}>
-        <div className="card" style={cardStyle}>
-          <img
-            src={home01Img}
-            alt="Gene conserved domain"
-            style={cardImageStyle}
-          />
-          <h2
-            style={{ marginBottom: "10px", color: "#000", textAlign: "left" }}
-          >
-            Gene conserved domain
-          </h2>
-          <p
-            style={{
-              fontSize: "16px",
-              color: "#666",
-              lineHeight: "1.8",
-              marginBottom: "15px",
-              textAlign: "left",
-            }}
-          >
-            The optimal editing regions are marked according to the conservative
-            domain information from Pfam, NCBI and InterPro.
-          </p>
-          <button style={buttonStyle} onClick={() => navigate("/help-about")}>
-            More
-          </button>
-        </div>
-
-        <div className="card" style={cardStyle}>
-          <img
-            src={home02Img}
-            alt="Genome Variation Information"
-            style={cardImageStyle}
-          />
-          <h2
-            style={{ marginBottom: "10px", color: "#000", textAlign: "left" }}
-          >
-            Genome Variation Information
-          </h2>
-          <p
-            style={{
-              fontSize: "16px",
-              color: "#666",
-              lineHeight: "1.8",
-              marginBottom: "15px",
-              textAlign: "left",
-            }}
-          >
-            Display genomic variation information of a given gene, including
-            SNP, InDel and SV, to help select the best sgRNA.
-          </p>
-          <button style={buttonStyle} onClick={() => navigate("/help-about")}>
-            More
-          </button>
-        </div>
-
-        <div className="card" style={cardStyle}>
-          <img
-            src={home03Img}
-            alt="Genome Spatial Structure"
-            style={cardImageStyle}
-          />
-          <h2
-            style={{ marginBottom: "10px", color: "#000", textAlign: "left" }}
-          >
-            Genome Spatial Structure
-          </h2>
-          <p
-            style={{
-              fontSize: "16px",
-              color: "#666",
-              lineHeight: "1.8",
-              marginBottom: "15px",
-              textAlign: "left",
-            }}
-          >
-            Display the chromosome 3D genome information (Compartment, TAD, Loop
-            et.al) of a given gene to help select the best CRISPR knock in site.
-          </p>
-          <button style={buttonStyle} onClick={() => navigate("/help-about")}>
-            More
-          </button>
-        </div>
-      </div> */}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { post } from "@/utils/request";
+import { get, post } from "@/utils/request";
 
 /**
  * Cas12设计API接口
@@ -46,5 +46,30 @@ export const getResult = async (params) => {
   return get(`/cas12a/cas12a_Jbrowse_API/`, {
     task_id: params.task_id,
     file_type: params.file_type,
+  });
+};
+/**
+ * Cas12结果查询接口
+ * @param {Object} params - 请求参数
+ * @param {string} params.task_id - 任务ID
+ * @param {string} params.cas_type - Cas类型
+ * @returns {Promise} API响应结果
+ */
+export const getCas12Result = async (params) => {
+  if (!params.cas_type) {
+    throw new Error("cas_type is required.");
+  }
+
+  let url = "";
+  if (params.cas_type === "cas12a") {
+    url = "/cas12/cas12a/execute/";
+  } else if (params.cas_type === "cas12b") {
+    url = "/cas12/cas12b/execute/";
+  } else {
+    throw new Error(`Unsupported cas_type: ${params.cas_type}`);
+  }
+
+  return get(url, {
+    task_id: params.task_id,
   });
 };

@@ -146,6 +146,7 @@ const Cas9 = () => {
         ref={pollingLoaderRef}
         apiFunction={executeCas9Design}
         resultPath="/cas9/result"
+        resultQueryParamName="task_id"
         getFormData={getFormData}
       />
       <div className="cas9-header">
@@ -161,6 +162,11 @@ const Cas9 = () => {
             (NHEJ), a mechanism which frequently causes insertions or deletions
             (indels) in the DNA. Indels often lead to frameshifts, creating loss
             of function alleles.
+            <InfoCircleOutlined
+              onClick={() => {
+                alert("info");
+              }}
+            />
           </p>
           <h2>Components: </h2>
           <ul>

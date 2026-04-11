@@ -1,3 +1,5 @@
+import "./index.css";
+
 function Foot() {
   const footStyle = {
     backgroundColor: "#f6f8ea",
@@ -6,15 +8,56 @@ function Foot() {
     fontSize: "15px",
     fontWeight: "500",
   };
+
   return (
-    <div style={footStyle}>
+    <div className="app-footer" style={footStyle}>
       <p>》CITE US: , DOI: 10.11</p>
-      <p>
-        © 2022 Copyright: <a href="https://www.hzau.edu.cn/" target="_blank">Huazhong Agricultural University </a> 
-        & <a href="https://croplab.hzau.edu.cn/" target="_blank">National Key Laboratory of Crop Genetic Improvement </a> 
-        & <a href="https://hbhs.hzau.edu.cn/index.htm" target="_blank">Hubei Hongshan Laboratory </a> 
-        & <a href="https://cotton.hzau.edu.cn/" target="_blank">Group of Cotton Genetic Improvement </a> 
-        & <a href="http://jinlab.hzau.edu.cn/GenomeEditingPlatform/" target="_blank">Genome Editing Platform @HZAU</a>
+      <p className="app-footer__links">
+        © 2022 Copyright: {" "}
+        <a
+          className="app-footer__link"
+          href="https://www.hzau.edu.cn/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Huazhong Agricultural University
+        </a>{" "}
+        & {" "}
+        <a
+          className="app-footer__link"
+          href="https://croplab.hzau.edu.cn/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          National Key Laboratory of Crop Genetic Improvement
+        </a>{" "}
+        & {" "}
+        <a
+          className="app-footer__link"
+          href="https://hbhs.hzau.edu.cn/index.htm"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Hubei Hongshan Laboratory
+        </a>{" "}
+        & {" "}
+        <a
+          className="app-footer__link"
+          href="https://cotton.hzau.edu.cn/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Group of Cotton Genetic Improvement
+        </a>{" "}
+        & {" "}
+        <a
+          className="app-footer__link"
+          href="http://jinlab.hzau.edu.cn/GenomeEditingPlatform/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Genome Editing Platform @HZAU
+        </a>
       </p>
       <p>Jointly developed with Beijing Bio Huaxing Gene Technology Co., LTD</p>
     </div>

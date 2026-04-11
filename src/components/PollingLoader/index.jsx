@@ -25,6 +25,8 @@ const PollingLoader = forwardRef(({
   onRedesign,
   pollInterval = 5000,
   patienceTimeout = 10000,
+  resultQueryParamName = "task_id",
+  getResultQueryParams,
   texts = {},
 }, ref) => {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ const PollingLoader = forwardRef(({
   const [showErrorButton, setShowErrorButton] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [apiParams, setApiParams] = useState(null);
+  const [taskId, setTaskId] = useState("");
   const pollingTimerRef = useRef(null);
   const prevRemainingTimeRef = useRef(null);
 
@@ -62,6 +65,12 @@ const PollingLoader = forwardRef(({
     });
   };
 
+  const syncTaskId = (payload) => {
+    if (payload?.task_id) {
+      setTaskId(payload.task_id);
+    }
+  };
+
   // 清理定时器
   useEffect(() => {
     return () => {
@@ -87,6 +96,8 @@ const PollingLoader = forwardRef(({
         console.log("Polling Response:", pollResponse);
 
         if (pollResponse && pollResponse.data) {
+          syncTaskId(pollResponse.data);
+
           // 第五种情况：任务运行成功，返回结果
           if (pollResponse.data.TableData || pollResponse.data.JbrowseInfo) {
             // 有结果，停止轮询，显示成功按钮
@@ -253,6 +264,7 @@ const PollingLoader = forwardRef(({
     setShowResultButton(false);
     setShowErrorButton(false);
     setErrorMessage("");
+    setTaskId("");
     setIsPolling(false);
     setRemainingTime(null);
     prevRemainingTimeRef.current = null;
@@ -273,6 +285,8 @@ const PollingLoader = forwardRef(({
 
       // 处理响应
       if (response && response.data) {
+        syncTaskId(response.data);
+
         // 第一种情况：参数有误，提交失败
         if (
           response.data.msg === "任务之前执行失败" &&
@@ -425,6 +439,7 @@ const PollingLoader = forwardRef(({
     }
     setShowErrorButton(false);
     setErrorMessage("");
+    setTaskId("");
     setIsPolling(false);
     setLoading(false);
     setRemainingTime(null);
@@ -436,19 +451,35 @@ const PollingLoader = forwardRef(({
 
   // 处理查看结果
   const handleViewResult = () => {
-    if (!getFormData || !resultPath) {
-      console.error("getFormData or resultPath is not provided");
+    if (!resultPath) {
+      console.error("resultPath is not provided");
       return;
     }
 
-    // 获取表单数据
-    const formData = getFormData();
+    const formData = apiParams || getFormData?.();
+    const searchParams = new URLSearchParams();
+    const queryParams = getResultQueryParams
+      ? getResultQueryParams({ taskId, formData })
+      : resultQueryParamName && taskId
+        ? { [resultQueryParamName]: taskId }
+        : {};
 
-    // 导航到结果页面，只传递表单参数
-    navigate(resultPath, {
-      state: {
-        apiParams: formData,
-      },
+    Object.entries(queryParams || {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        searchParams.set(key, value);
+      }
+    });
+
+    const targetPath = searchParams.toString()
+      ? `${resultPath}?${searchParams.toString()}`
+      : resultPath;
+
+    navigate(targetPath, {
+      state: formData
+        ? {
+            apiParams: formData,
+          }
+        : undefined,
     });
     setShowResultButton(false);
   };

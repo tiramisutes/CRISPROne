@@ -164,6 +164,11 @@ const CRISPREpigenome = () => {
             editing effector domains using CRISPR/Cas systems allows
             site-specific control over modifications to DNA, histones, and
             chromatin architecture.
+            <InfoCircleOutlined
+              onClick={() => {
+                alert("info");
+              }}
+            />
           </p>
           <h2>Available modifications include:</h2>
           <ul>

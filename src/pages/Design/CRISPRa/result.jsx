@@ -10,14 +10,16 @@ import {
   Dropdown,
 } from "antd";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
-import { executeCRISPRaDesign } from "@/utils/api/apis";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { executeCRISPRaDesign, getCRISPRaResult } from "@/utils/api/apis";
+import { extractUserParameters, resolveDesignResult } from "@/utils/designResult";
 import {
   JBrowseLinearGenomeView,
   createViewState,
 } from "@jbrowse/react-linear-genome-view";
 import { useDownloadProgress } from "@/hooks/useDownloadProgress";
 import LoadingProgress from "@/components/LoadingProgress";
+import GlobalFullscreenToggle from "@/components/GlobalFullscreenToggle";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./index.css";
@@ -83,10 +85,11 @@ export const processMdAndSequence = (md, sequence) => {
 
 const CRISPRaResult = () => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [jbrowseState, setJbrowseState] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resultData, setResultData] = useState(null);
+  const [pageError, setPageError] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState(["Guide_0"]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [offTargetData, setOffTargetData] = useState(null);
@@ -437,31 +440,34 @@ const CRISPRaResult = () => {
     const initializeData = async () => {
       try {
         setLoading(true);
+        setPageError("");
 
-        // 从 router state 读取参数
-        const { apiParams } = location.state || {};
+        setText("Fetching result from server...");
+        const resolution = await resolveDesignResult({
+          searchParams,
+          locationState: location.state,
+          executeRequest: executeCRISPRaDesign,
+          getRequest: getCRISPRaResult,
+          createProgressHandler,
+          isReady: (data) => Boolean(data?.TableData && data?.JbrowseInfo),
+        });
 
-        if (!apiParams) {
-          message.error("Design result data not found, please redesign");
-          setLoading(false);
-          setTimeout(() => {
-            navigate("/crispra");
-          }, 2000);
+        if (resolution.status !== "success") {
+          setPageError(resolution.error);
+          if (resolution.status === "pending") {
+            message.info(resolution.error);
+          } else {
+            message.error(resolution.error);
+          }
           return;
         }
 
-        setUserParameters(apiParams);
+        const data = resolution.data;
+        setText('Processing data...');
+        setUserParameters(extractUserParameters(resolution.apiParams, data));
+        setResultData(data);
 
-        setText('Fetching data from server...');
 
-        // 使用参数请求结果
-        const response = await executeCRISPRaDesign(apiParams, createProgressHandler());
-
-        if (response && response.data) {
-          if (response.data.TableData && response.data.JbrowseInfo) {
-            setText('Processing data...');
-            const data = response.data;
-            setResultData(data);
 
             const { assembly, tracks, position } = data.JbrowseInfo;
             setInitialPosition(position);
@@ -586,44 +592,18 @@ const CRISPRaResult = () => {
 
             setText('Initialization complete!');
             message.success("Data loaded successfully");
-          } else {
-            const errorMsg = response.data.error || response.data.msg || "Failed to get result data";
-            message.error(errorMsg);
-            setTimeout(() => {
-              navigate("/crispra");
-            }, 2000);
-          }
-        } else {
-          message.error("Response format error, please redesign");
-          setTimeout(() => {
-            navigate("/crispra");
-          }, 2000);
-        }
       } catch (error) {
         console.error("Initialization failed:", error);
-        let errorMsg = "";
-        if (error.response) {
-          if (typeof error.response.data === 'string') {
-            errorMsg = error.response.data;
-          } else {
-            errorMsg = error.response.data?.error || error.response.data?.msg || error.response.data?.message || `Request failed: ${error.response.status}`;
-          }
-        } else if (error.request) {
-          errorMsg = "Network error, please check your network connection";
-        } else {
-          errorMsg = error?.message || "Request failed, please try again later";
-        }
-        message.error(errorMsg);
-        setTimeout(() => {
-          navigate("/crispra");
-        }, 2000);
+        const errorText = error?.message || "Data loading failed";
+        setPageError(errorText);
+        message.error("Data loading failed: " + errorText);
       } finally {
         setLoading(false);
       }
     };
 
     initializeData();
-  }, [location, navigate]);
+  }, []);
 
   if (loading) {
     return <LoadingProgress percent={progress} text={text} />;
@@ -632,13 +612,14 @@ const CRISPRaResult = () => {
   if (!resultData) {
     return (
       <div className="error-container">
-        <p>Failed to load result data</p>
+        <p>{pageError || "Failed to load result data"}</p>
       </div>
     );
   }
 
   return (
-    <div className="crispra-result-container">
+    <div className="crispra-result-container result-page-shell">
+      <GlobalFullscreenToggle />
       {/* 参数部分 */}
       <div className="result-section">
         <Title level={3}>Set Parameters</Title>

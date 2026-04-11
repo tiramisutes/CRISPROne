@@ -142,6 +142,7 @@ const Cas12Cpf1 = () => {
         ref={pollingLoaderRef}
         apiFunction={executeCas12Design}
         resultPath="/cas12/result"
+        getResultQueryParams={({ taskId, formData }) => ({ task_id: taskId, cas_type: formData?.cas_type })}
         getFormData={getFormData}
       />
       <div className="cas12-header">
